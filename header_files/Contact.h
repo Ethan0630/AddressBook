@@ -11,23 +11,24 @@ namespace contact
 	{
 	private:
 		// Fields
-		std::string FirstName, LastName;														// field - name
-		menu::Menu ContactInfoMenu;																// field - menu 
+		std::string FirstName, LastName, DisplayName;											// field - name
+		bool VIP;																				// field - VIP Role
 		std::vector<std::pair<std::string, std::string>> Characteristics;						// field - characteristics
 
 		// Private Methods
 		void SortData();																		// method - sort characteristics
-		void UpdateContactInfoMenu();															// method - update contact menu
 	public:
 		// Constructors
 		Contact();																				// constructor - default, takes nothing
-		Contact(std::string first_name, std::string last_name);									// constructor - simple, takes name
 		Contact(std::string first_name, std::string last_name, 
-			std::vector<std::pair<std::string, std::string>> Characteristics);					// constructor - complex, takes name and data (assumed to be sorted)
+			std::string display_name, bool vip);												// constructor - simple, takes name
+		Contact(std::string first_name, std::string last_name, std::string display_name,
+			bool vip, std::vector<std::pair<std::string, std::string>> Characteristics);		// constructor - complex, takes name and data (assumed to be sorted)
 		
 		// Update name
 		void ChangeFirst(std::string first_name);												// mutable - change f_name
 		void ChangeLast(std::string last_name);													// mutable - change l_name
+		void ChangeDisplay(std::string display_name);											// mutable - change display name
 
 		// Edit data
 		void AddChar(std::string characteristic, std::string value);							// mutable - add characteristic (plus sort)
@@ -40,10 +41,13 @@ namespace contact
 		std::string FileFormat();																// method - return info in file format
 
 		// Accessors
-		std::string GetName();																	// accessor - return name
+		std::string GetName();																	// accessor - return display name
 		std::vector<std::pair<std::string, std::string>> GetCharacteristics();					// accessor - return characteristics
+		bool isVIP();																			// accessor - return whether contact is part of VIP Role
+		bool isDuplicateName(std::string display_name);											// accessor - return whether contact has display name 
 
 		// Tests for searching
+		bool has(std::string keyword);															// test - all
 		bool hasFirstName(std::string first_name);												// test - f_name 
 		bool hasLastName(std::string last_name);												// test - l_name
 		bool hasName(std::string name);															// test - name

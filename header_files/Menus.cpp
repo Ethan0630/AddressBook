@@ -90,4 +90,12 @@ namespace menu
 			DisplayMenu(out);
 			return ReadMenuChoice(input, out, in);
 		}
+
+		YesNoMenu::YesNoMenu(std::string heading) : Menu({"Yes", "No"}, heading)  {}
+
+		YesNoMenu::GetBoolean() 
+		{
+			this->RunMenu();
+			return (this->Curr_Selection == 1);
+		}
 }

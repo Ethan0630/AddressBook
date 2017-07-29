@@ -8,21 +8,28 @@ namespace contact
 	{																								//
 		FirstName = "";																				// assign FirstName to empty string
 		LastName = "";																				// assign LastName to empty string
+		DisplayName = "";																			// assign DisplayName to empty string
+		VIP = false;																				// assign VIP to false
 		Characteristics = std::vector<std::pair<std::string, std::string>>();						// assign characteristics to empty vector of string pairs
 	}																								//
 																									
-	Contact::Contact(std::string first_name, std::string last_name)									// simple constructor - takes name
+	Contact::Contact(std::string first_name, std::string last_name, 
+		std::string display_name, bool vip)															// simple constructor - takes name
 	{																								//
 		FirstName = first_name;																		// assign FirstName to first_name parameter
 		LastName = last_name;																		// assign LastName to last_name parameter
+		DisplayName = display_name;																	// assign DisplayName to display_name
+		VIP = vip;																					// assign VIP to vip
 		Characteristics = std::vector<std::pair<std::string, std::string>>();						// assign characteristics to empty vector of string pairs
 	}																								//
 
-	Contact::Contact(std::string first_name, std::string last_name,
-		std::vector<std::pair<std::string, std::string>> characteristics)							// complex constructor - takes name and characteristics
+	Contact::Contact(std::string first_name, std::string last_name, std::string display_name, 
+		bool vip, std::vector<std::pair<std::string, std::string>> characteristics)					// complex constructor - takes name and characteristics
 	{																								//
 		FirstName = first_name;																		// assign FirstName to first_name parameter
 		LastName = last_name;																		// assign LastName to last_name parameter
+		DisplayName = display_name;																	// assign DisplayName to display_name
+		VIP = vip;																					// assign VIP to vip
 		Characteristics = characteristics;															// assign characteristics to characteristics parameter
 	}																								//
 
@@ -37,6 +44,11 @@ namespace contact
 	{																								//
 		LastName = last_name;																		// assign LastName to last_name parameter
 	}																								//
+
+	void Contact::ChangeDisplay(std::string display_name)
+	{
+		DisplayName = display_name.empty() ? FirstName + " " + LastName : display_name;				// assign DisplayName to display_name
+	}
 
 	// Edit Characteristics
 	// *********************************************************************************************
@@ -61,7 +73,9 @@ namespace contact
 	// *********************************************************************************************
 	void Contact::Display()																			// method - display contact info
 	{																								// 
-		std::cout << FirstName << " " << LastName;													// output name	 
+		std::cout << DisplayName;																	// output name	
+		if (DisplayName != (FirstName + " " + LastName))											// if the display name differs from first and last name
+			std::cout << "\n\tFirst Name: " << FirstName << "\n\tLast Name: " << LastName;			// display first and last name
 		for (const std::pair<std::string, std::string> &Val : Characteristics)						// loop through characteristics
 		{																							// 
 			std::cout << "\n\t" << Val.first << ": " << Val.second;									// display current characteristic
@@ -70,7 +84,8 @@ namespace contact
 																									 
 	std::string Contact::FileFormat()																// method - return info in file format
 	{																								// 
-		std::string Result = FirstName + "|" + LastName;											// separate first and last name with delimiter
+		std::string Result = DisplayName + "|" + FirstName + "|" + LastName + "|";					// separate first and last name with delimiter
+		Result += VIP ? "true" : "false";															// add vip data to result													
 		for (const std::pair<std::string, std::string> &Val : Characteristics)						// loop through characteristics
 		{																							// 
 			Result += "|" + Val.first + "|" + Val.second;											// separate current characteristic with delimiter
@@ -82,13 +97,23 @@ namespace contact
 	// *********************************************************************************************
 	std::string Contact::GetName()																	// accessor - return name
 	{																								// 
-		return FirstName + " " + LastName;															// return name
+		return DisplayName;																			// return display name
 	}																								// 
 																									
 	std::vector<std::pair<std::string, std::string>> Contact::GetCharacteristics()					// accessor - return characteristics
 	{																								// 
 		return Characteristics;																		// return characteristics vector
 	}																								// 			  
+
+	bool Contact::isVip()																			// accessor - return VIP
+	{																								// 
+		return VIP;																					// return VIP
+	}																								// 
+
+	bool isDuplicateName(std::string display_name)													// accessor - determine whether parameter is duplicate
+	{																								//
+		return DisplayName == display_name;															// return comparison
+	}																								//
 
 	// Tests
 	// *********************************************************************************************

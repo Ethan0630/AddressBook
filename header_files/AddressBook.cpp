@@ -253,7 +253,8 @@ namespace address_book
 		while (std::getline(in_file, InputLine))
 		{
 			std::vector<std::string> InputVec = str_manip::Str_SplitByChar(InputLine, '|');
-			Contact CurrentContact = Contact(InputVec[0], InputVec[1]);
+			bool vip = (InputVec[3] == "true") ? true : false;
+			Contact CurrentContact = Contact(InputVec[1], InputVec[2], InputVec[0], vip);
 			if (InputVec.size() == 2) continue;
 			std::string Temp;
 			for (int i = 2; i < InputVec.size(); i++)
@@ -344,6 +345,18 @@ namespace address_book
 			break;
 		}
 		return 1;
+	}
+
+	bool CheckDup(std::string input)
+	{
+		for (Contact c : Contacts)
+			if (c.isDuplicateName(input)) return true;
+		return false;
+	}
+
+	void AddContact(const Contact& c)
+	{
+		Contacts.push_back(c);
 	}
 }
 

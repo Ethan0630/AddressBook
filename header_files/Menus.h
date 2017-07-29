@@ -40,4 +40,10 @@ namespace menu
 		int ReadMenuChoice(std::string* input = nullptr, std::ostream& out = std::cout, std::istream& in = std::cin);
 		int RunMenu(std::string* input = nullptr, std::ostream& out = std::cout, std::istream& in = std::cin);
 	};
+
+	class YesNoMenu : public Menu 
+	{
+		public: YesNoMenu(std::string heading); 
+		bool GetBoolean();
+	};
 }

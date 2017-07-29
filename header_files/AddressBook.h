@@ -49,5 +49,9 @@ namespace address_book
 
 		// Searching
 		int Search();															// search - direct searching
+
+		bool CheckDup(std::string input);
+
+		void AddContact(const Contact& c);
 	};
 }

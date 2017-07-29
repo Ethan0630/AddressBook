@@ -7,12 +7,14 @@
 #include "../header_files/Contact.h"
 #include "../header_files//AddressBook.h"
 #include "../header_files/StringFunctions.h"
+#include "../header_files/MethodControl.h"
 
 using namespace error_handling;
 using namespace menu;
 using namespace contact;
 using namespace str_manip;
 using namespace address_book;
+using namespace methods;
 
 int main()
 {
