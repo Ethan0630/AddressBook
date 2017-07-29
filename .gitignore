@@ -1,11 +1,8 @@
-/node_modules
-/public/hot
-/public/storage
-/storage/*.key
-/vendor
-/.idea
-/.vagrant
-Homestead.json
-Homestead.yaml
-npm-debug.log
-.env
+Address Book.sln
+Address Book.VC.db
+Address Book.VC.VC.opendb
+/.vs
+/Debug
+/Address Book/Address Book.vcxproj
+/Address Book/Address Book.vcxproj.filters
+/Address Book/Debug
