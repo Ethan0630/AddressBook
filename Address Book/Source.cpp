@@ -13,22 +13,22 @@ using namespace error_handling;
 using namespace menu;
 using namespace contact;
 using namespace str_manip;
-using namespace address_book;
+//using namespace address_book;
 using namespace methods;
 
 int main()
 {
 	std::ifstream InFile = std::ifstream("data.txt"); 
 	if (!InFile) { Err_FileNotOpen().DisplayMessage(); std::cin.ignore(); return 0; }
-	AddressBook Book = AddressBook(InFile);
+	//AddressBook Book = AddressBook(InFile);
 	Menu MainMenu = Menu({ "Contact List", "New Contact", "Search Contacts", "Save & Exit" }, "Main Menu: ");
-	int(AddressBook::*Funcs[3])() = { &AddressBook::Display, &AddressBook::NewContact, &AddressBook::Search };
+	//int(AddressBook::*Funcs[3])() = { &AddressBook::Display, &AddressBook::NewContact, &AddressBook::Search };
 	do
 	{
 		str_manip::ClearScreen();
 		MainMenu.RunMenu();
 		if (MainMenu.Curr_Selection() == 4) break;
-		MainMenu.Curr_Selection((Book.*Funcs[MainMenu.Curr_Selection() - 1])());
+		//MainMenu.Curr_Selection((Book.*Funcs[MainMenu.Curr_Selection() - 1])());
 	} while (MainMenu.Curr_Selection() != 4);
 }
 

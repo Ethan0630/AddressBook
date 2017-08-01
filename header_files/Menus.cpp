@@ -93,9 +93,9 @@ namespace menu
 
 		YesNoMenu::YesNoMenu(std::string heading) : Menu({"Yes", "No"}, heading)  {}
 
-		YesNoMenu::GetBoolean() 
+		bool YesNoMenu::GetBoolean() 
 		{
 			this->RunMenu();
-			return (this->Curr_Selection == 1);
+			return (this->Curr_Selection() == 1);
 		}
 }

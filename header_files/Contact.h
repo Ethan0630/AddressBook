@@ -1,6 +1,50 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <vector>
+
+#include "StringFunctions.h"
+
+using namespace std;
+
+namespace contact {
+	class Contact
+	{
+	private:
+		string FirstName, LastName, DisplayName;
+		int ID;
+		bool VIP;
+
+		static int ID_Num;
+	public:
+		Contact();
+		Contact(string FirstName, string LastName, string DisplayName, bool vip);
+
+		Contact& operator= (Contact &c);
+
+		string SetFirstName(string fname);
+		string SetLastName(string lname);
+		string SetDisplayName(string dname);
+		bool SetVIP(bool vip);
+
+		string GetFirstName();
+		string GetLastName();
+		string GetDisplayName();
+		bool isVIP();
+		int GetID();
+
+		string FileFormat();
+
+		void Save(ofstream& outfile);
+		void Read(ifstream& infile);
+	};
+}
+
+/*#pragma once
+#include <string>
+#include <iostream>
 #include <algorithm>
 #include <vector>
 #include "Menus.h"
@@ -55,4 +99,4 @@ namespace contact
 		bool hasValue(std::string value);														// test - value
 		bool hasCharacteristicValue(std::string characteristic, std::string value);				// test - characteristic + value
 	};
-}
+}*/

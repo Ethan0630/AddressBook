@@ -6,7 +6,7 @@ using namespace menu;
 
 namespace address_book
 {
-	std::vector< std::vector<std::string> > AddressBook::BuildSplitList()
+	/*std::vector< std::vector<std::string> > AddressBook::BuildSplitList()
 	{
 		std::vector< std::vector<std::string> > SplitContacts = std::vector<std::vector<std::string>>();
 		std::vector<std::string> Page = std::vector<std::string>();
@@ -136,20 +136,30 @@ namespace address_book
 			if (*Err) { Err->DisplayMessage(); continue; }
 			return Input;
 		}
-	}
+	}*/
 
-	AddressBook::AddressBook()
+	AddressBook::AddressBook(std::ifstream& infile, std::ofstream& outfile)
 	{
 		Contacts = std::vector<Contact>();
+		InFile = &infile;
+		OutFile = &outfile;
 	}
 
-	AddressBook::AddressBook(std::ifstream& in_file)
+	void AddressBook::Add(const Contact& c)
 	{
-		Contacts = std::vector<Contact>();
-		Read(in_file);
+		Contacts.push_back(c);
+	}
+
+	void AddressBook::Edit(int id, Contact& c)
+	{
+		auto val = std::find_if(std::begin(Contacts), std::end(Contacts), 
+			[id](Contact C)
+		{
+			return C.GetID() == id;
+		});
 	}
 	
-	int AddressBook::ViewContact(int index)
+	/*int AddressBook::ViewContact(int index)
 	{
 		str_manip::ClearScreen();
 		Contacts[index].Display();
@@ -357,6 +367,5 @@ namespace address_book
 	void AddContact(const Contact& c)
 	{
 		Contacts.push_back(c);
-	}
+	}*/
 }
-

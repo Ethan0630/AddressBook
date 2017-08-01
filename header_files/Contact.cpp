@@ -1,5 +1,115 @@
 #include "Contact.h"
 
+using namespace std;
+
+namespace contact
+{
+	int Contact::ID_Num = 1;
+
+	Contact::Contact()
+	{
+		FirstName = "";
+		LastName = "";
+		DisplayName = "";
+		VIP = false;
+		ID = ID_Num++;
+	}
+	Contact::Contact(string fname, string lname, string dname, bool vip)
+	{
+		FirstName = fname;
+		LastName = lname;
+		DisplayName = dname;
+		VIP = vip;
+		ID = ID_Num++;
+	}
+
+
+	Contact& Contact::operator= (Contact& c)
+	{
+		if (this == &c)
+			return *this;
+		FirstName = c.GetFirstName();
+		LastName = c.GetLastName();
+		DisplayName = c.GetDisplayName();
+		VIP = c.isVIP();
+		return *this;
+	}
+
+
+	string Contact::SetFirstName(string fname)
+	{
+		FirstName = fname;
+		return FirstName;
+	}
+	string Contact::SetLastName(string lname)
+	{
+		LastName = lname;
+		return LastName;
+	}
+	string Contact::SetDisplayName(string dname)
+	{
+		DisplayName = dname;
+		return DisplayName;
+	}
+	bool Contact::SetVIP(bool vip)
+	{
+		VIP = vip;
+		return VIP;
+	}
+
+	string Contact::GetFirstName()
+	{
+		return FirstName;
+	}
+	string Contact::GetLastName()
+	{
+		return LastName;
+	}
+	string Contact::GetDisplayName()
+	{
+		return DisplayName;
+	}
+	bool Contact::isVIP()
+	{
+		return VIP;
+	}
+	int Contact::GetID()
+	{
+		return ID;
+	}
+
+
+	string Contact::FileFormat()
+	{
+		std::string Result =  FirstName + "|" + LastName + "|" + DisplayName + "|";
+		Result += VIP ? "true" : "false";																													
+		return Result;																
+	}
+
+
+	void Contact::Save(ofstream& outfile)
+	{
+		outfile << this->FileFormat();
+		outfile.close();
+	}
+
+	void Contact::Read(ifstream& infile)
+	{
+		std::string InputLine;
+		while (std::getline(infile, InputLine))
+		{
+			std::vector<std::string> InputVec = str_manip::Str_SplitByChar(InputLine, '|');			
+			this->F_Name(InputVec[0]);
+			this->L_Name(InputVec[1]);
+			this->D_Name(InputVec[2]);
+			this->VIP_Status(InputVec[3] == "true");
+		}
+	}
+}
+
+
+/*#include "Contact.h"
+
 namespace contact
 {
 	// Constructors
@@ -173,4 +283,4 @@ namespace contact
 				return l_val.first < r_val.first;													// 
 			});																						// sort characteristics vector according to characteristic's name
 	}																								// 
-}
+}*/

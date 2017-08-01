@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include "Contact.h"
 #include "ErrorHandling.h"
 #include "StringFunctions.h"
@@ -18,7 +19,10 @@ namespace address_book
 		// Fields
 		std::vector<Contact> Contacts;											// field - contact_list
 
-		std::vector< std::vector<std::string> > BuildSplitList();				// method - split contact_list into groups of ten
+		std::ifstream* InFile;
+		std::ofstream* OutFile;
+
+		/*std::vector< std::vector<std::string> > BuildSplitList();				// method - split contact_list into groups of ten
 		int GetJumpNum(int num_pgs);											// menu method - get a jump to page number
 		void UpdateCharacteristic(Contact& c, int index,
 			std::vector<std::string> commands = std::vector<std::string>());	// method - update contact characteristic
@@ -29,12 +33,15 @@ namespace address_book
 		std::string RunCharacteristicInput(Contact& c, int index, 
 			std::vector<std::string> commands = std::vector<std::string>());
 		std::string RunDataInput(Contact& c, std::string characteristic,
-			std::vector<std::string> commands = std::vector<std::string>());
+			std::vector<std::string> commands = std::vector<std::string>());*/
 	public:
 		// Constructor
-		AddressBook();															// constructor - default, takes nothing
-		AddressBook(std::ifstream& in_file);									// constructor - simple, take input filestream object to read in contacts
+		AddressBook(std::ifstream& infile, std::ofstream& outfile);				// constructor - complex, take filestream objects
 
+		void Add(const Contact& c);												// edit - add contact to book
+		void Edit(int id, Contact& c);											// edit - edit existing contact
+
+		/*
 		// Edit Contacts
 		int ViewContact(int index);												// view/edit - get to contact info with editing options
 		int NewContact();														// edit - new contact (plus sort)
@@ -53,5 +60,6 @@ namespace address_book
 		bool CheckDup(std::string input);
 
 		void AddContact(const Contact& c);
+		*/
 	};
 }
