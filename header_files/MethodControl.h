@@ -13,23 +13,17 @@ using namespace error_handling;
 using namespace menu;
 using namespace contact;
 using namespace str_manip;
-//using namespace address_book;
+using namespace address_book;
 
 namespace methods
 {
-	enum Route {MAIN, EXIT, LIST, SEARCH, CREATE};
+	enum Route {MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS};
 
-	vector<pair<string, Route>> Commands = 
-	{
-		pair<string, Route>("/mainmenu", MAIN),
-		pair<string, Route>("/exit", EXIT),
-		pair<string, Route>("/create", CREATE)
-	};
-
-
-
-	Route RunRoute(Route route);
+	Route RunRoute(Route route, AddressBook& book, int& current);
 
 	Route Main();
-	Route Create();
+	Route Create(AddressBook& book, int& current);
+	Route AddCharas(AddressBook& book, int& current);
+	Route List(AddressBook& book, int& current);
+	Route Display(AddressBook& book, int& current);
 }

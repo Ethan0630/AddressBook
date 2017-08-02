@@ -16,7 +16,7 @@ namespace contact {
 		string FirstName, LastName, DisplayName;
 		int ID;
 		bool VIP;
-
+		vector<pair<string, string>> Attributes;
 		static int ID_Num;
 	public:
 		Contact();
@@ -28,17 +28,20 @@ namespace contact {
 		string SetLastName(string lname);
 		string SetDisplayName(string dname);
 		bool SetVIP(bool vip);
+		pair<string, string> AddAttr(string attr_name, string attr_val);
 
 		string GetFirstName();
 		string GetLastName();
 		string GetDisplayName();
 		bool isVIP();
 		int GetID();
+		vector<pair<string, string>> GetAttributes();
+		pair<string, string> GetAttr(string name);
+		string GetAttrVal(string name);
 
 		string FileFormat();
 
-		void Save(ofstream& outfile);
-		void Read(ifstream& infile);
+		bool hasAttr(string name);
 	};
 }
 

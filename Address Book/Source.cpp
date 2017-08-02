@@ -13,23 +13,31 @@ using namespace error_handling;
 using namespace menu;
 using namespace contact;
 using namespace str_manip;
-//using namespace address_book;
+using namespace address_book;
 using namespace methods;
 
 int main()
 {
-	std::ifstream InFile = std::ifstream("data.txt"); 
-	if (!InFile) { Err_FileNotOpen().DisplayMessage(); std::cin.ignore(); return 0; }
-	//AddressBook Book = AddressBook(InFile);
-	Menu MainMenu = Menu({ "Contact List", "New Contact", "Search Contacts", "Save & Exit" }, "Main Menu: ");
-	//int(AddressBook::*Funcs[3])() = { &AddressBook::Display, &AddressBook::NewContact, &AddressBook::Search };
-	do
+	AddressBook Book = AddressBook("data.txt");
+	if (!Book.Read())
 	{
-		str_manip::ClearScreen();
-		MainMenu.RunMenu();
-		if (MainMenu.Curr_Selection() == 4) break;
-		//MainMenu.Curr_Selection((Book.*Funcs[MainMenu.Curr_Selection() - 1])());
-	} while (MainMenu.Curr_Selection() != 4);
+		cout << "Error while reading initial file input!\n"
+			<< "Press any key to exit: ";
+		cin.ignore();
+		return 0;
+	}
+	int CurrentContactID = Book.First();
+	Route CurrentRoute = MAIN;
+	while (CurrentRoute != EXIT)
+	{
+		CurrentRoute = RunRoute(CurrentRoute, Book, CurrentContactID);
+	}
+	if (!Book.Save())
+	{
+		cout << "Error while reading initial file input!\n"
+			<< "Press any key to exit: ";
+		cin.ignore();		
+	}
 }
 
 

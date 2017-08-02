@@ -19,9 +19,8 @@ namespace address_book
 		// Fields
 		std::vector<Contact> Contacts;											// field - contact_list
 
-		std::ifstream* InFile;
-		std::ofstream* OutFile;
-
+		std::string Path;
+		
 		/*std::vector< std::vector<std::string> > BuildSplitList();				// method - split contact_list into groups of ten
 		int GetJumpNum(int num_pgs);											// menu method - get a jump to page number
 		void UpdateCharacteristic(Contact& c, int index,
@@ -36,10 +35,15 @@ namespace address_book
 			std::vector<std::string> commands = std::vector<std::string>());*/
 	public:
 		// Constructor
-		AddressBook(std::ifstream& infile, std::ofstream& outfile);				// constructor - complex, take filestream objects
+		AddressBook(std::string path);											// constructor - complex, take filestream objects
 
 		void Add(const Contact& c);												// edit - add contact to book
 		void Edit(int id, Contact& c);											// edit - edit existing contact
+		bool Save();															// file - save
+		bool Read();															// file - read
+		int First();
+		vector<vector<Contact>> List();
+		Contact Find(int id);													
 
 		/*
 		// Edit Contacts

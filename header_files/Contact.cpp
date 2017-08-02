@@ -12,6 +12,7 @@ namespace contact
 		LastName = "";
 		DisplayName = "";
 		VIP = false;
+		Attributes = vector<pair<string, string>>();
 		ID = ID_Num++;
 	}
 	Contact::Contact(string fname, string lname, string dname, bool vip)
@@ -20,6 +21,7 @@ namespace contact
 		LastName = lname;
 		DisplayName = dname;
 		VIP = vip;
+		Attributes = vector<pair<string, string>>();
 		ID = ID_Num++;
 	}
 
@@ -56,26 +58,36 @@ namespace contact
 		VIP = vip;
 		return VIP;
 	}
+	pair<string, string> Contact::AddAttr(string attr_name, string attr_val)
+	{
+		pair<string, string> Attr = pair<string, string>(attr_name, attr_val);
+		Attributes.push_back(Attr);
+		return Attr;
+	}
 
-	string Contact::GetFirstName()
+	string Contact::GetFirstName() { return FirstName; }
+	string Contact::GetLastName() { return LastName; }
+	string Contact::GetDisplayName() { return DisplayName; }
+	bool Contact::isVIP() { return VIP; }
+	int Contact::GetID() { return ID; }
+	vector<pair<string, string>> Contact::GetAttributes() { return Attributes; }
+	pair<string, string> Contact::GetAttr(string name) 
 	{
-		return FirstName;
+		if (!this->hasAttr(name)) return pair<string, string>("", "");
+		return *(std::find_if(std::begin(Attributes), std::end(Attributes),
+			[name](pair<string, string> val)
+		{
+			return val.first == name;
+		}));
 	}
-	string Contact::GetLastName()
+	string Contact::GetAttrVal(string name)
 	{
-		return LastName;
-	}
-	string Contact::GetDisplayName()
-	{
-		return DisplayName;
-	}
-	bool Contact::isVIP()
-	{
-		return VIP;
-	}
-	int Contact::GetID()
-	{
-		return ID;
+		if (!this->hasAttr(name)) return "";
+		return std::find_if(std::begin(Attributes), std::end(Attributes),
+			[name](pair<string, string> val)
+		{
+			return val.first == name;
+		})->first;
 	}
 
 
@@ -86,24 +98,13 @@ namespace contact
 		return Result;																
 	}
 
-
-	void Contact::Save(ofstream& outfile)
+	bool Contact::hasAttr(string name)
 	{
-		outfile << this->FileFormat();
-		outfile.close();
-	}
-
-	void Contact::Read(ifstream& infile)
-	{
-		std::string InputLine;
-		while (std::getline(infile, InputLine))
+		return std::find_if(std::begin(Attributes), std::end(Attributes),
+			[name](pair<string, string> val)
 		{
-			std::vector<std::string> InputVec = str_manip::Str_SplitByChar(InputLine, '|');			
-			this->F_Name(InputVec[0]);
-			this->L_Name(InputVec[1]);
-			this->D_Name(InputVec[2]);
-			this->VIP_Status(InputVec[3] == "true");
-		}
+			return val.first == name;
+		}) == Attributes.end();
 	}
 }
 

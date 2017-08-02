@@ -138,11 +138,10 @@ namespace address_book
 		}
 	}*/
 
-	AddressBook::AddressBook(std::ifstream& infile, std::ofstream& outfile)
+	AddressBook::AddressBook(std::string path)
 	{
 		Contacts = std::vector<Contact>();
-		InFile = &infile;
-		OutFile = &outfile;
+		Path = path;
 	}
 
 	void AddressBook::Add(const Contact& c)
@@ -157,6 +156,66 @@ namespace address_book
 		{
 			return C.GetID() == id;
 		});
+		*val = c;
+	}
+
+	bool AddressBook::Save()
+	{
+		std::ofstream Out = ofstream(Path);
+		if (!Out) { return false; }
+		for (Contact c : Contacts)
+		{
+			Out << c.FileFormat() << "\n";
+		}
+		Out.close();
+		return true;
+	}
+
+	bool AddressBook::Read()
+	{
+		std::ifstream In = ifstream(Path);
+		if (!In) { return false; }
+		Contacts.clear();		
+		std::string InputLine;
+		while (std::getline(In, InputLine))
+		{
+			std::vector<std::string> InputVec = str_manip::Str_SplitByChar(InputLine, '|');
+			bool vip = (InputVec[3] == "true") ? true : false;
+			Contact CurrentContact = Contact(InputVec[0], InputVec[1], InputVec[2], vip);
+			std::string Temp;
+			for (int i = 4; i < InputVec.size(); i++)
+			{
+				if (i % 2) CurrentContact.AddAttr(Temp, InputVec[i]);
+				else Temp = InputVec[i];				
+			}
+			Contacts.push_back(CurrentContact);
+		}
+	}
+
+	int AddressBook::First()
+	{
+		if (Contacts.empty()) return 0;
+		return Contacts[0].GetID();
+	}
+
+	vector<vector<Contact>> AddressBook::List()
+	{
+		vector<vector<Contact>> ContactList = vector<vector<Contact>>();
+		for (int i = 0; i < Contacts.size(); i += 10) 
+		{
+			auto last = (Contacts.size() < (i + 10)) ? Contacts.size() : (i + 10);
+			ContactList.emplace_back(Contacts.begin() + i, Contacts.begin() + last);
+		}
+		return ContactList;
+	}
+
+	Contact AddressBook::Find(int id)
+	{
+		return *(std::find_if(std::begin(Contacts), std::end(Contacts),
+			[id](Contact C)
+		{
+			return C.GetID() == id;
+		}));
 	}
 	
 	/*int AddressBook::ViewContact(int index)
@@ -212,66 +271,6 @@ namespace address_book
 		else if (EditMenu.Curr_Selection() == EditMenu.NumOfSelections())
 		{
 			return 2;
-		}
-	}
-
-	int AddressBook::NewContact()
-	{
-		str_manip::ClearScreen();
-		Error* Err;
-		std::cout << "Create new contact\n";
-		std::cout << "Note: All inputs are stored \"as-is\", spaces included\n";
-		bool isRepeating= true;
-		std::vector<std::string> NameVec;
-		while (isRepeating)
-		{
-			NameVec = str_manip::Str_SplitByChar(RunNameInput(), '|');
-			int idx = 0;
-			for (; idx < Contacts.size(); idx++)
-			{
-				 if (Contacts[idx].hasFirstName(NameVec[0]) && Contacts[idx].hasLastName(NameVec[1]))
-				 {
-				 	
-				 }
-			}
-		}
-		Contact C = Contact(NameVec[0], NameVec[1]);
-		Menu M = Menu({ "Yes", "No" }, "Would you like to add some characteristics?");
-		M.RunMenu();
-		M.UpdateHeading("Again?");
-		while (M.Curr_Selection() == 1)
-		{
-			AddCharacteristic(C);
-			M.RunMenu();
-		}
-		Contacts.push_back(C); 
-		return 1;
-	}
-
-	void AddressBook::Save(std::ofstream& out_file)
-	{
-		for (Contact c : Contacts)
-		{
-			out_file << c.FileFormat() << "\n";
-		}
-		out_file.close();
-	}
-	
-	void AddressBook::Read(std::ifstream& in_file)
-	{
-		std::string InputLine;
-		while (std::getline(in_file, InputLine))
-		{
-			std::vector<std::string> InputVec = str_manip::Str_SplitByChar(InputLine, '|');
-			bool vip = (InputVec[3] == "true") ? true : false;
-			Contact CurrentContact = Contact(InputVec[1], InputVec[2], InputVec[0], vip);
-			if (InputVec.size() == 2) continue;
-			std::string Temp;
-			for (int i = 2; i < InputVec.size(); i++)
-			{
-				(!(i % 2)) ? (Temp = InputVec[i]) : CurrentContact.AddChar(Temp, InputVec[i]);
-			}
-			Contacts.push_back(CurrentContact);
 		}
 	}
 
