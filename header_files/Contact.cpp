@@ -98,6 +98,18 @@ namespace contact
 		return Result;																
 	}
 
+	string Contact::DisplayFormat()
+	{
+		string Result = DisplayName;
+		if (DisplayName != FirstName + " " + LastName) 
+			Result += "\n\tFirst Name: " + FirstName + "\n\tLast Name: " + LastName;
+		for (pair<string, string> Attr : Attributes) 
+			Result += "\n\t" + Attr.first + ": " + Attr.second;
+		if (Result == DisplayName)
+			Result += "\n\tContact has no Info";
+		return Result;
+	}
+
 	bool Contact::hasAttr(string name)
 	{
 		return std::find_if(std::begin(Attributes), std::end(Attributes),

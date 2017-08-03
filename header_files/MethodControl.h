@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <unordered_map>
 #include "../header_files/ErrorHandling.h"
 #include "../header_files/Menus.h"
 #include "../header_files/Contact.h"
@@ -17,9 +18,26 @@ using namespace address_book;
 
 namespace methods
 {
-	enum Route {MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS};
+	enum Route {NONE, MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS, REMOVE, EDIT};
+
+	const std::unordered_map<std::string, Route> Commands = std::unordered_map<std::string, Route>({
+		{"/main", MAIN},
+		{"/exit", EXIT},
+		{"/create", CREATE},
+		{"/list", LIST}
+	});
+
+	const std::vector<string> SpecialEntries = std::vector<string>({
+		"/main",
+		"/exit",
+		"/create",
+		"/list"
+	});
+
+	bool isCommand(std::string input);
 
 	Route RunRoute(Route route, AddressBook& book, int& current);
+	Route RunCommand(std::string Input);
 
 	Route Main();
 	Route Create(AddressBook& book, int& current);

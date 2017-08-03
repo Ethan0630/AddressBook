@@ -40,6 +40,7 @@ namespace contact {
 		string GetAttrVal(string name);
 
 		string FileFormat();
+		string DisplayFormat();
 
 		bool hasAttr(string name);
 	};

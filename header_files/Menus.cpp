@@ -12,7 +12,7 @@ namespace menu
 			CurrentSelection = -1;
 		}
 
-		Menu::Menu(std::vector<std::string> selections, std::string heading, std::string prompt, std::vector<std::string> special_entries)
+		Menu::Menu(std::vector<std::string> selections, std::string heading, std::vector<std::string> special_entries, std::string prompt)
 		{
 			Selections = selections;
 			Heading = heading;
@@ -67,15 +67,22 @@ namespace menu
 		}
 		int Menu::ReadMenuChoice(std::string* input, std::ostream& out, std::istream& in)
 		{
-			CurrentSelection = -1;
+			CurrentSelection = 0;
 			while (1)
 			{
 				std::string Input;
-				getline(in, Input);
+				getline(in, Input);				
+				for (std::string cmd : SpecialEntries)
+				{
+					if (!strncmp(Input.c_str(), cmd.c_str(), cmd.size()))
+					{
+						if (input != nullptr) *input = Input; 
+						return 0;
+					}
+				}
 				int num = Input.length();
 				for (char c : Input) { if (c != ' ') Input += c; }
 				Input = Input.substr(num);
-				if (std::find(SpecialEntries.begin(), SpecialEntries.end(), Input) != SpecialEntries.end()) { if (input != nullptr) *input = Input; return -1; }
 				bool isNum = true;
 				for (char c : Input) { if (!isdigit(c)) isNum = false; break; }
 				if (!isNum) { out << "Entry must be integral!\nTry again: "; continue; }
@@ -89,6 +96,11 @@ namespace menu
 		{
 			DisplayMenu(out);
 			return ReadMenuChoice(input, out, in);
+		}
+		int Menu::RunMenu(std::string& input)
+		{
+			DisplayMenu(std::cout);
+			return ReadMenuChoice(&input);
 		}
 
 		YesNoMenu::YesNoMenu(std::string heading) : Menu({"Yes", "No"}, heading)  {}

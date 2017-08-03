@@ -9,6 +9,18 @@ using namespace address_book;
 
 namespace methods
 {
+	bool isCommand(std::string input)
+	{
+		for (std::string cmd : SpecialEntries)
+		{
+			if (!strncmp(input.c_str(), cmd.c_str(), cmd.size()))
+			{				
+				return true;
+			}
+		}
+		return 0;
+	}
+
 	Route RunRoute(Route route, AddressBook& book, int& current)
 	{
 		switch(route)
@@ -21,11 +33,23 @@ namespace methods
 		}
 	}
 
+	Route RunCommand(std::string input)
+	{
+		if (Commands.find(input) != Commands.end()) return Commands.at(input);
+		return NONE;
+	}
+
 	Route Main()
 	{
 		str_manip::ClearScreen();
-		Menu MainMenu = Menu({ "Contact List", "New Contact", "Search Contacts", "Save & Exit" }, "Main Menu: ");
-		MainMenu.RunMenu();
+		Menu MainMenu = Menu({ "Contact List", "New Contact", "Search Contacts", "Save & Exit" }, "Main Menu: ", SpecialEntries);
+		std::string Input;
+		if (!MainMenu.RunMenu(Input))
+		{
+			Route CmdRoute = RunCommand(Input);
+			if (CmdRoute == NONE) return MAIN;
+			return CmdRoute;
+		}
 		switch (MainMenu.Curr_Selection())
 		{
 		case 1: return LIST;
@@ -43,32 +67,54 @@ namespace methods
 		string Prompts[3] = { "First Name", "Last Name", "Display Name (optional)" };
 		str_manip::ClearScreen();
 		cout << "Create New Contact\n";
-		for(int i = 0; i < 4; i++)
+		for(int i = 0; i < 4;)
 		{
-			if (i < 4)
+			if (i < 3)
 			{
 				cout << "Enter " << Prompts[i] << ": ";
 				getline(cin, Input);
-				str_manip::Str_RemoveChar(Input, ' ');
+				if (isCommand(Input))
+				{
+					Route CmdRoute = RunCommand(Input);
+					if (CmdRoute == NONE) continue;
+					return CmdRoute;
+				}				
 				if (Input.empty())
 				{
-					cout << Prompts[i] << " cannot be empty!\n";
-					continue;
+					if (i != 2)
+					{
+						cout << Prompts[i] << " cannot be empty!\n";
+						continue;
+					}
+					else Input = Inputs[0] + " " + Inputs[1];
 				}
 				Inputs.push_back(Input);
 			}
 			else
 			{
-				Menu VIP_Menu = Menu({"Yes", "No"}, "Add this contact to the VIP role?");
-				VIP_Menu.RunMenu();
-				Inputs.push_back((VIP_Menu.Curr_Selection() - 1) ? "false": "true" );
+				Menu VIP_Menu = Menu({"Yes", "No"}, "Add this contact to the VIP role?", SpecialEntries);				
+				if (!VIP_Menu.RunMenu(Input))
+				{
+					Route CmdRoute = RunCommand(Input);
+					if (CmdRoute == NONE) continue;
+					return CmdRoute;
+				}
+				(VIP_Menu.Curr_Selection() == 1) ? Inputs.push_back("true") : Inputs.push_back("false");							
 			}
+			i++;
 		}
 		NewContact = Contact(Inputs[0], Inputs[1], Inputs[2], (Inputs[3] == "true"));
 		current = NewContact.GetID();
 		book.Add(NewContact);
-		Menu AddCharas = Menu({ "Yes", "No" }, "Would you like to add some characteristics?");
-		AddCharas.RunMenu();
+		cout << "New Contact Created!\n";
+		Menu AddCharas = Menu({ "Yes", "No" }, "Would you like to add some characteristics?", SpecialEntries);		
+		Start_Menu:
+		if (!AddCharas.RunMenu(Input))
+		{
+			Route CmdRoute = RunCommand(Input);
+			if (CmdRoute == NONE) goto Start_Menu;
+			return CmdRoute;
+		}
 		if (AddCharas.Curr_Selection() == 1) return ADD_CHARAS;
 		return MAIN;
 	}
@@ -85,7 +131,12 @@ namespace methods
 			if (!i) cout << "Enter Attribute Name: ";
 			else cout << "Enter " << Input << ": ";
 			getline(cin, Input);
-			str_manip::Str_RemoveChar(Input, ' ');
+			if (isCommand(Input))
+			{
+				Route CmdRoute = RunCommand(Input);
+				if (CmdRoute == NONE) continue;
+				return CmdRoute;
+			}
 			if (Input.empty())
 			{
 				cout << "Input cannot be empty!\n";
@@ -93,8 +144,14 @@ namespace methods
 			}
 			Inputs.push_back(Input);
 		}
-		Menu AddCharas = Menu({ "Yes", "No" }, "Would you like to add another characteristic?");
-		AddCharas.RunMenu();
+		Menu AddCharas = Menu({ "Yes", "No" }, "Would you like to add another characteristic?", SpecialEntries);
+		Start_Menu:
+		if (!AddCharas.RunMenu(Input))
+		{
+			Route CmdRoute = RunCommand(Input);
+			if (CmdRoute == NONE) goto Start_Menu;
+			return CmdRoute;
+		}
 		if (AddCharas.Curr_Selection() == 1) return ADD_CHARAS;
 		return MAIN;
 	}
@@ -104,35 +161,53 @@ namespace methods
 		str_manip::ClearScreen();
 		vector<vector<Contact>> ContactList = book.List();
 		static int page_idx = 0;
+		string Input = "";
 		string PageHeading = "Contact List : Page " + to_string(page_idx + 1) + " of " + to_string(ContactList.size());
 		vector<string> CurrentPage = vector<string>();
 		for (Contact c : ContactList[page_idx]) CurrentPage.push_back(c.GetDisplayName());
 		if (ContactList.size() == 1) CurrentPage.push_back("Back to Main Menu");
-		if (!page_idx) CurrentPage.insert(CurrentPage.end(), { "Next Page", "Jump to Page", "Back to Main Menu" });
+		else if (!page_idx) CurrentPage.insert(CurrentPage.end(), { "Next Page", "Jump to Page", "Back to Main Menu" });
 		else if (page_idx == (ContactList.size() - 1)) CurrentPage.insert(CurrentPage.end(), { "Previous Page", "Jump to Page", "Back to Main Menu" });
 		else CurrentPage.insert(CurrentPage.end(), { "Next Page", "Previous Page", "Jump to Page", "Back to Main Menu" });
-		Menu ContactListMenu = Menu(CurrentPage, PageHeading);
-		int Choice = ContactListMenu.RunMenu();
-		if (Choice < ContactList[page_idx].size())
+		Menu ContactListMenu = Menu(CurrentPage, PageHeading, SpecialEntries);
+		Start_Menu:
+		if (!ContactListMenu.RunMenu(Input))
 		{
+			Route CmdRoute = RunCommand(Input);
+			if (CmdRoute == NONE) goto Start_Menu;
+			return CmdRoute;
+		}
+		int Choice = ContactListMenu.Curr_Selection();
+		if (Choice <= ContactList[page_idx].size())
+		{
+			page_idx = 0;
 			current = ContactList[page_idx][Choice - 1].GetID();
 			return DISPLAY;
 		}
-		if (Choice == CurrentPage.size()) return MAIN;
+		if (Choice == CurrentPage.size())
+		{
+			page_idx = 0;
+			return MAIN;
+		}
 		else if (Choice == (CurrentPage.size() - 1))
 		{
 			int Temp = page_idx;
-			cout << "Enter Page Number (1-" << ContactList.size() << "): ";
 			while (1)
-			{
-				std::string Input;
+			{		
+				cout << "Enter Page Number (1-" << ContactList.size() << "): ";
 				getline(cin, Input);
+				if (isCommand(Input))
+				{
+					Route CmdRoute = RunCommand(Input);
+					if (CmdRoute == NONE) continue;
+					return CmdRoute;
+				}
 				str_manip::Str_RemoveChar(Input, ' ');
 				bool isNum = true;
 				for (char c : Input) { if (!isdigit(c)) isNum = false; break; }
-				if (!isNum) { cout << "Entry must be integral!\nTry again: "; continue; }
+				if (!isNum) { cout << "Entry must be integral!\n"; continue; }
 				else Temp = stoi(Input);
-				if (!((Temp >= 1) && (Temp <= ContactList.size()))) { cout << "Entry was out of range!\nTry again: "; continue; }
+				if (!((Temp >= 1) && (Temp <= ContactList.size()))) { cout << "Entry was out of range!\n"; continue; }
 				page_idx = Temp;
 				return LIST;
 			}
@@ -151,6 +226,23 @@ namespace methods
 
 	Route Display(AddressBook& book, int& current)
 	{
-		return MAIN;
+		Contact CurrentContact = book.Find(current);
+		string Input = "";
+		str_manip::ClearScreen();
+		cout << CurrentContact.DisplayFormat() << endl;
+		vector<string> Options = { "Edit", "Delete", "Back", "Back to Main" };
+		Menu OptionsMenu = Menu(Options, "Contact Options: ", SpecialEntries);
+		Start_Menu:
+		if (!OptionsMenu.RunMenu(Input))
+		{
+			Route CmdRoute = RunCommand(Input);
+			if (CmdRoute == NONE) goto Start_Menu;
+			return CmdRoute;
+		}
+		int Choice = OptionsMenu.Curr_Selection();
+		if (Choice == 4) return MAIN;
+		if (Choice == 3) return LIST;
+		if (Choice == 2) return REMOVE;
+		else return EDIT;
 	}
 }

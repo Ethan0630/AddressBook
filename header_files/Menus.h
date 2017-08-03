@@ -19,7 +19,7 @@ namespace menu
 		Menu();
 
 		Menu(std::vector<std::string> selections, std::string heading = "",
-			std::string prompt = "Enter number of desired selection: ", std::vector<std::string> special_entries = std::vector<std::string>());
+			std::vector<std::string> special_entries = std::vector<std::string>(), std::string prompt = "Enter number of desired selection: ");
 
 		// Modifiers
 		void UpdateHeading(std::string heading);
@@ -39,6 +39,7 @@ namespace menu
 		void DisplayMenu(std::ostream& out = std::cout);
 		int ReadMenuChoice(std::string* input = nullptr, std::ostream& out = std::cout, std::istream& in = std::cin);
 		int RunMenu(std::string* input = nullptr, std::ostream& out = std::cout, std::istream& in = std::cin);
+		int RunMenu(std::string& input);
 	};
 
 	class YesNoMenu : public Menu 
