@@ -153,10 +153,18 @@ namespace address_book
 	{
 		auto val = std::find_if(std::begin(Contacts), std::end(Contacts), 
 			[id](Contact C)
-		{
-			return C.GetID() == id;
+			{
+				return C.GetID() == id;
 		});
 		*val = c;
+	}
+
+	void AddressBook::Delete(int id)
+	{
+		Contacts.erase(std::remove_if(Contacts.begin(), Contacts.end(), [id](Contact C)
+			{
+				return C.GetID() == id;
+		}), Contacts.end());
 	}
 
 	bool AddressBook::Save()

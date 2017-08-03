@@ -39,6 +39,7 @@ namespace address_book
 
 		void Add(const Contact& c);												// edit - add contact to book
 		void Edit(int id, Contact& c);											// edit - edit existing contact
+		void Delete(int id);													// edit - delete existing contact
 		bool Save();															// file - save
 		bool Read();															// file - read
 		int First();

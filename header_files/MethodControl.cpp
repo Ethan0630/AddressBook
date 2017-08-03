@@ -30,11 +30,17 @@ namespace methods
 		case ADD_CHARAS: return AddCharas(book, current);
 		case LIST: return List(book, current);
 		case DISPLAY: return Display(book, current);
+		case REMOVE: return Remove(book, current);
 		}
 	}
 
 	Route RunCommand(std::string input)
 	{
+		if (input == "/clear")
+		{
+			str_manip::ClearScreen();
+			return NONE;
+		}
 		if (Commands.find(input) != Commands.end()) return Commands.at(input);
 		return NONE;
 	}
@@ -244,5 +250,27 @@ namespace methods
 		if (Choice == 3) return LIST;
 		if (Choice == 2) return REMOVE;
 		else return EDIT;
+	}
+
+	Route Remove(AddressBook& book, int& current)
+	{
+		Contact CurrentContact = book.Find(current);
+		string Input = "";
+		cout << "Delete Contact\n";
+		string Heading = "Are you sure you wish to delete " + CurrentContact.GetDisplayName() + "?";
+		Menu SureMenu = Menu({ "Yes", "No" }, Heading, SpecialEntries);
+		Start_Menu:
+		if (!SureMenu.RunMenu(Input))
+		{
+			Route CmdRoute = RunCommand(Input);
+			if (CmdRoute == NONE) goto Start_Menu;
+			return CmdRoute;
+		}
+		if (SureMenu.Curr_Selection() == 1)
+		{
+			book.Delete(CurrentContact.GetID());
+			return LIST;
+		}
+		else return DISPLAY;
 	}
 }

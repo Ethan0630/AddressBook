@@ -18,20 +18,22 @@ using namespace address_book;
 
 namespace methods
 {
-	enum Route {NONE, MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS, REMOVE, EDIT};
+	enum Route {NONE, MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS, REMOVE, EDIT, CLEAR};
 
 	const std::unordered_map<std::string, Route> Commands = std::unordered_map<std::string, Route>({
 		{"/main", MAIN},
 		{"/exit", EXIT},
 		{"/create", CREATE},
-		{"/list", LIST}
+		{"/list", LIST},
+		{"/clear", CLEAR}
 	});
 
 	const std::vector<string> SpecialEntries = std::vector<string>({
 		"/main",
 		"/exit",
 		"/create",
-		"/list"
+		"/list",
+		"/clear"
 	});
 
 	bool isCommand(std::string input);
@@ -44,4 +46,5 @@ namespace methods
 	Route AddCharas(AddressBook& book, int& current);
 	Route List(AddressBook& book, int& current);
 	Route Display(AddressBook& book, int& current);
+	Route Remove(AddressBook& book, int& current);
 }
