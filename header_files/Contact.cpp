@@ -34,6 +34,11 @@ namespace contact
 		LastName = c.GetLastName();
 		DisplayName = c.GetDisplayName();
 		VIP = c.isVIP();
+		Attributes.clear();
+		for (pair<string, string> Attr : c.GetAttributes())
+		{
+			Attributes.push_back(Attr);
+		}
 		return *this;
 	}
 
@@ -63,6 +68,13 @@ namespace contact
 		pair<string, string> Attr = pair<string, string>(attr_name, attr_val);
 		Attributes.push_back(Attr);
 		return Attr;
+	}
+	void Contact::RemoveAttr(string attr_name)
+	{
+		Attributes.erase(std::remove_if(Attributes.begin(), Attributes.end(), [attr_name](pair<string, string> attr)
+		{
+			return attr.first == attr_name;
+		}), Attributes.end());
 	}
 
 	string Contact::GetFirstName() { return FirstName; }
@@ -94,7 +106,9 @@ namespace contact
 	string Contact::FileFormat()
 	{
 		std::string Result =  FirstName + "|" + LastName + "|" + DisplayName + "|";
-		Result += VIP ? "true" : "false";																													
+		Result += VIP ? "true" : "false";
+		for (pair<string, string> Attr : Attributes)
+			Result += "|" + Attr.first + "|" + Attr.second;
 		return Result;																
 	}
 

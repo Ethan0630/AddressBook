@@ -29,6 +29,7 @@ namespace contact {
 		string SetDisplayName(string dname);
 		bool SetVIP(bool vip);
 		pair<string, string> AddAttr(string attr_name, string attr_val);
+		void RemoveAttr(string attr_name);
 
 		string GetFirstName();
 		string GetLastName();

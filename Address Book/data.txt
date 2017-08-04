@@ -1,3 +1,4 @@
 Ethan|Basham|Ethan Basham|false
 Jane|Smith|Jane Smith|false
 Mark|Ford|Mark Ford|false
+John|Doe|John Doe|false|Friend|Bob
