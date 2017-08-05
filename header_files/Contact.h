@@ -22,7 +22,7 @@ namespace contact {
 		Contact();
 		Contact(string FirstName, string LastName, string DisplayName, bool vip);
 
-		Contact& operator= (Contact &c);
+		Contact Edit(Contact& c);
 
 		string SetFirstName(string fname);
 		string SetLastName(string lname);
@@ -39,6 +39,7 @@ namespace contact {
 		vector<pair<string, string>> GetAttributes();
 		pair<string, string> GetAttr(string name);
 		string GetAttrVal(string name);
+		vector<string> MenuOptions();
 
 		string FileFormat();
 		string DisplayFormat();

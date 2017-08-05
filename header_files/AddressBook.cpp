@@ -161,7 +161,7 @@ namespace address_book
 			{
 				return C.GetID() == id;
 		});
-		*val = c;
+		val->Edit(c);
 	}
 
 	void AddressBook::Delete(int id)
@@ -203,6 +203,22 @@ namespace address_book
 			}
 			Contacts.push_back(CurrentContact);
 		}
+	}
+
+	bool AddressBook::DupName(std::string input, int exception)
+	{
+		auto it = std::find_if(Contacts.begin(), Contacts.end(), [input](Contact c) {
+			return c.GetDisplayName() == input;
+		});
+		if (it == Contacts.end()) return false;
+		else if (!exception) return true;
+		else if (it->GetID() == exception)
+		{
+			return std::find_if(it + 1, Contacts.end(), [input](Contact c) {
+				return c.GetDisplayName() == input;
+			}) != Contacts.end();
+		}
+		else return true;
 	}
 
 	int AddressBook::First()

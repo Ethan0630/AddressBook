@@ -25,20 +25,13 @@ namespace contact
 		ID = ID_Num++;
 	}
 
-
-	Contact& Contact::operator= (Contact& c)
+	Contact Contact::Edit(Contact& c) 
 	{
-		if (this == &c)
-			return *this;
 		FirstName = c.GetFirstName();
 		LastName = c.GetLastName();
 		DisplayName = c.GetDisplayName();
 		VIP = c.isVIP();
-		Attributes.clear();
-		for (pair<string, string> Attr : c.GetAttributes())
-		{
-			Attributes.push_back(Attr);
-		}
+		Attributes = c.GetAttributes();
 		return *this;
 	}
 
@@ -112,6 +105,29 @@ namespace contact
 		return Result;																
 	}
 
+	vector<string> Contact::MenuOptions()
+	{
+		vector<string> Options = vector<string>({
+			"Display Name: " + DisplayName,
+			"First Name: " + FirstName
+		});
+		if (Attributes.empty()) Options.push_back("Last Name: " + LastName + "\n");
+		else Options.push_back("Last Name: " + LastName);
+		for (int i = 0; i < Attributes.size(); i++)
+		{
+			if (i == (Attributes.size() - 1)) 
+				Options.push_back(Attributes[i].first + ": " + Attributes[i].second + "\n");
+			else
+				Options.push_back(Attributes[i].first + ": " + Attributes[i].second);
+		}
+		if (VIP) Options.push_back("Remove from VIP Role");
+		else Options.push_back("Add to VIP Role");
+		Options.push_back("Add Attributes");
+		Options.push_back("Back to Display");
+		Options.push_back("Back to Main");
+		return Options;
+	}
+
 	string Contact::DisplayFormat()
 	{
 		string Result = DisplayName;
@@ -130,7 +146,7 @@ namespace contact
 			[name](pair<string, string> val)
 		{
 			return val.first == name;
-		}) == Attributes.end();
+		}) != Attributes.end();
 	}
 }
 

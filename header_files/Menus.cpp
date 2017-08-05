@@ -71,13 +71,14 @@ namespace menu
 			{
 				string Input = "";
 				getline(in, Input);
+				if (Input.empty()) { cout << "Entry cannot be empty!\nTry again: "; continue; }
 				request->Input = Input;
 				if (isCommand(request->Input))
 				{
 					request->CurrRoute = RunCommand(*request);
 					if (request->CurrRoute == NONE)
 					{
-						cout << "\nTry again: ";
+						DisplayMenu();
 						continue;
 					}
 					return 0;
@@ -99,4 +100,8 @@ namespace menu
 			DisplayMenu(std::cout);
 			return ReadMenuChoice();
 		}
+
+		BoolMenu::BoolMenu() : Menu() {}
+		BoolMenu::BoolMenu(std::string heading, Request& req, std::string prompt) : Menu({ "Yes", "No" }, heading, req, prompt) {}
+		bool BoolMenu::GetBool() { return Curr_Selection() == 1; }
 }

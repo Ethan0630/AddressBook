@@ -42,6 +42,7 @@ namespace address_book
 		void Delete(int id);													// edit - delete existing contact
 		bool Save();															// file - save
 		bool Read();															// file - read
+		bool DupName(std::string input, int exception = 0);
 		int First();
 		vector<Contact> List();
 		vector<Contact> Search(std::string keyword);

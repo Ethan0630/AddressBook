@@ -100,4 +100,9 @@ namespace str_manip
 		if (!((Num >= min) && (Num <= max))) return new Err_OutOfRange();
 		return Result;
 	}
+
+	std::string Divider(char c)
+	{
+		return std::string(65, c);
+	}
 }

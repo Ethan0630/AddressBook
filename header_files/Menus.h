@@ -40,4 +40,14 @@ namespace menu
 		int ReadMenuChoice(std::string* input = nullptr, std::ostream& out = std::cout, std::istream& in = std::cin);
 		int RunMenu();
 	};
+
+	class BoolMenu : public Menu 
+	{
+		public: 
+			BoolMenu();
+			BoolMenu(std::string heading, Request& req,
+				std::string prompt = "Enter number of desired selection: "); 
+
+			bool GetBool();
+	};
 }

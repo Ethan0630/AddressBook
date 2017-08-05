@@ -28,6 +28,7 @@ namespace methods
 	Route Display(Request& request);
 	Route Remove(Request& request);
 	Route Edit(Request& request);
+	Route EditChara(Request& request);
 	Route Search(Request& request);
 	Route VIPList(Request& request);
 }

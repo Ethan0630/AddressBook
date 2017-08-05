@@ -13,4 +13,5 @@ namespace str_manip
 	int StrToInt(std::string str, error_handling::Error* err, int base = 10);					// function to convert a string to a double value
 	std::vector<std::string> Str_SplitByChar(std::string str, char c);
 	Error* Str_CheckIntInRange(const std::string& str, int min, int max);
+	std::string Divider(char c);
 }
