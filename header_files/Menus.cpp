@@ -6,18 +6,18 @@ namespace menu
 		Menu::Menu()
 		{
 			Selections = std::vector<std::string>();
-			SpecialEntries = std::vector<std::string>();
 			Heading = "";
 			Prompt = "";
 			CurrentSelection = -1;
+			request = new Request();
 		}
 
-		Menu::Menu(std::vector<std::string> selections, std::string heading, std::vector<std::string> special_entries, std::string prompt)
+		Menu::Menu(std::vector<std::string> selections, std::string heading, Request& req, std::string prompt)
 		{
 			Selections = selections;
 			Heading = heading;
 			Prompt = prompt;
-			SpecialEntries = special_entries;
+			request = &req;
 			CurrentSelection = -1;
 		}
 
@@ -36,8 +36,7 @@ namespace menu
 			Selections.reserve(Selections.size() + selections.size());
 			Selections.insert(Selections.end(), selections.begin(), selections.end());
 		}
-		void Menu::ReloadSpecialEntries(std::vector<std::string> special_entries) { SpecialEntries = special_entries; }
-		void Menu::AddSpecialEntry(std::string special_entry) { SpecialEntries.push_back(special_entry); }
+		void Menu::ReloadRequest(Request &req) { request = &req; }
 
 		// Accessors
 		std::string Menu::Str()
@@ -70,15 +69,18 @@ namespace menu
 			CurrentSelection = 0;
 			while (1)
 			{
-				std::string Input;
-				getline(in, Input);				
-				for (std::string cmd : SpecialEntries)
+				string Input = "";
+				getline(in, Input);
+				request->Input = Input;
+				if (isCommand(request->Input))
 				{
-					if (!strncmp(Input.c_str(), cmd.c_str(), cmd.size()))
+					request->CurrRoute = RunCommand(*request);
+					if (request->CurrRoute == NONE)
 					{
-						if (input != nullptr) *input = Input; 
-						return 0;
+						cout << "\nTry again: ";
+						continue;
 					}
+					return 0;
 				}
 				int num = Input.length();
 				for (char c : Input) { if (c != ' ') Input += c; }
@@ -92,22 +94,9 @@ namespace menu
 				return num;
 			}
 		}
-		int Menu::RunMenu(std::string* input, std::ostream& out, std::istream& in)
-		{
-			DisplayMenu(out);
-			return ReadMenuChoice(input, out, in);
-		}
-		int Menu::RunMenu(std::string& input)
+		int Menu::RunMenu()
 		{
 			DisplayMenu(std::cout);
-			return ReadMenuChoice(&input);
-		}
-
-		YesNoMenu::YesNoMenu(std::string heading) : Menu({"Yes", "No"}, heading)  {}
-
-		bool YesNoMenu::GetBoolean() 
-		{
-			this->RunMenu();
-			return (this->Curr_Selection() == 1);
+			return ReadMenuChoice();
 		}
 }

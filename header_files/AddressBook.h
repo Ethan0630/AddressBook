@@ -7,7 +7,6 @@
 #include "Contact.h"
 #include "ErrorHandling.h"
 #include "StringFunctions.h"
-#include "Menus.h"
 
 using namespace contact;
 
@@ -35,6 +34,7 @@ namespace address_book
 			std::vector<std::string> commands = std::vector<std::string>());*/
 	public:
 		// Constructor
+		AddressBook();															// constructor - default constructor
 		AddressBook(std::string path);											// constructor - complex, take filestream objects
 
 		void Add(const Contact& c);												// edit - add contact to book
@@ -43,7 +43,9 @@ namespace address_book
 		bool Save();															// file - save
 		bool Read();															// file - read
 		int First();
-		vector<vector<Contact>> List();
+		vector<Contact> List();
+		vector<Contact> Search(std::string keyword);
+		vector<Contact> VIPRole();
 		Contact Find(int id);													
 
 		/*

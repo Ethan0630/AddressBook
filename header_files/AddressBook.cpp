@@ -2,7 +2,6 @@
 
 using namespace contact;
 using namespace error_handling;
-using namespace menu;
 
 namespace address_book
 {
@@ -138,6 +137,12 @@ namespace address_book
 		}
 	}*/
 
+	AddressBook::AddressBook()
+	{
+		Contacts = std::vector<Contact>();
+		Path = "";
+	}
+
 	AddressBook::AddressBook(std::string path)
 	{
 		Contacts = std::vector<Contact>();
@@ -206,15 +211,29 @@ namespace address_book
 		return Contacts[0].GetID();
 	}
 
-	vector<vector<Contact>> AddressBook::List()
+	std::vector<Contact> AddressBook::List()
 	{
-		vector<vector<Contact>> ContactList = vector<vector<Contact>>();
-		for (int i = 0; i < Contacts.size(); i += 10) 
+		return Contacts;
+	}
+
+	std::vector<Contact> AddressBook::Search(std::string input)
+	{
+		std::vector<Contact> Results = std::vector<Contact>();
+		for (Contact c : Contacts)
 		{
-			auto last = (Contacts.size() < (i + 10)) ? Contacts.size() : (i + 10);
-			ContactList.emplace_back(Contacts.begin() + i, Contacts.begin() + last);
+			if (c.GetDisplayName().find(input) != std::string::npos) Results.push_back(c);
 		}
-		return ContactList;
+		return Results;
+	}
+
+	std::vector<Contact> AddressBook::VIPRole()
+	{
+		std::vector<Contact> Results = std::vector<Contact>();
+		for (Contact c : Contacts)
+		{
+			if (c.isVIP()) Results.push_back(c);
+		}
+		return Results;
 	}
 
 	Contact AddressBook::Find(int id)
