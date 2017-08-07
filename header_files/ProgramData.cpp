@@ -91,22 +91,22 @@ bool isEmpty(vector<string> inputs)
 
 Route RunCommand(Request& request)
 {
-	if (Commands.find(request.Input) != Commands.end()) return Commands.at(request.Input);
 	if (request.Input == "/clear")
 	{
 		str_manip::ClearScreen();
 	}
+	else if (request.Input == "/current")
+	{
+		std::cout << "Current Contact: " << request.CurrentContact.GetDisplayName() << endl;
+		std::cout << "Press [Enter] to continue ";
+		std::cin.ignore();
+		str_manip::ClearScreen();
+	}
+	else if (Commands.find(request.Input) != Commands.end()) return Commands.at(request.Input);
 	else if (request.Input.find("/create") != string::npos)
 	{
 		cout << RunCreate(request);
 		cin.ignore();
-	}
-	else if (request.Input == "/current")
-	{
-		std::cout << "Command Output " << request.CurrentContact.GetDisplayName() << endl;
-		std::cout << "Press [Enter] to continue ";
-		std::cin.ignore();
-		str_manip::ClearScreen();
 	}
 	return NONE;
 }
@@ -115,6 +115,7 @@ string RunCreate(Request& request)
 {
 	bool vipset = false;
 	bool disset = false;
+	string vip = "";
 	vector<string> Inputs = vector<string>();
 	vector<pair<string, string>> Attrs = vector<pair<string, string>>();
 	vector<string> Cmd = str_manip::Str_SplitByChar(request.Input, ' ');
@@ -125,28 +126,30 @@ string RunCreate(Request& request)
 	Inputs.push_back(Cmd[1]);
 	Inputs.push_back(Cmd[2]);
 	Cmd.erase(Cmd.begin(), Cmd.begin() + 3);
-	if (Cmd.empty())
+
+	if (!Cmd.empty())
 	{
 		while (1)
 		{
 			if (find(Cmd.begin(), Cmd.end(), "-f") != Cmd.end())
 			{
 				if (vipset) return CmdError;
-				Inputs.push_back("false");
+				vip = "false";
 				vipset = true;
 				Cmd.erase(find(Cmd.begin(), Cmd.end(), "-f"));
 			}
 			else if (find(Cmd.begin(), Cmd.end(), "-t") != Cmd.end())
 			{
 				if (vipset) return CmdError;
-				Inputs.push_back("true");
+				vip = "true";
 				vipset = true;
-				Cmd.erase(find(Cmd.begin(), Cmd.end(), "-f"));
+				Cmd.erase(find(Cmd.begin(), Cmd.end(), "-t"));
 			}
 			else break;
 		}
 	}
-	if (Cmd.empty())
+
+	if (!Cmd.empty())
 	{
 		while (1)
 		{
@@ -180,17 +183,15 @@ string RunCreate(Request& request)
 	if (Inputs.size() == 2)
 	{
 		Inputs.push_back(Inputs[0] + " " + Inputs[1]);
-		Inputs.push_back("false");
+		vip = "false";
 	}
 	else if (Inputs.size() == 3)
 	{
-		if ((Inputs[2] == "true") || (Inputs[2] == "false"))
-		{
-			Inputs.insert(Inputs.begin() + 2, Inputs[0] + " " + Inputs[1]);
-		}
-		else Inputs.push_back("false");
+		if (vip != "")
+			Inputs.push_back(Inputs[0] + " " + Inputs[1]);
+		else vip = "false";
 	}
-	bool isvip = (Inputs[3] == "true");
+	bool isvip = (vip == "true");
 	Contact NewContact = Contact(Inputs[0], Inputs[1], Inputs[2], isvip);
 	for (pair<string, string> Attr : Attrs)
 	{

@@ -29,6 +29,7 @@ namespace methods
 	Route Main(Request& request)
 	{
 		str_manip::ClearScreen();
+		request.PrevRoute = MAIN;
 		Menu MainMenu = Menu({ "Contact List", "VIP Role", "New Contact", "Search Contacts", "Save & Exit" }, "Main Menu: ", request);
 		if (!MainMenu.RunMenu()) return request.CurrRoute;
 		switch (MainMenu.Curr_Selection())
@@ -144,13 +145,14 @@ namespace methods
 		else if (!page_idx) CurrentPage.insert(CurrentPage.end(), { "Next Page", "Jump to Page", "Back to Main Menu" });
 		else if (page_idx == (ContactList.size() - 1)) CurrentPage.insert(CurrentPage.end(), { "Previous Page", "Jump to Page", "Back to Main Menu" });
 		else CurrentPage.insert(CurrentPage.end(), { "Next Page", "Previous Page", "Jump to Page", "Back to Main Menu" });
+		request.PrevRoute = LIST;
 		Menu ContactListMenu = Menu(CurrentPage, PageHeading, request);
 		if (!ContactListMenu.RunMenu()) return request.CurrRoute;
 		int Choice = ContactListMenu.Curr_Selection();
 		if (Choice <= ContactList[page_idx].size())
 		{
-			page_idx = 0;
 			request.CurrentContact = ContactList[page_idx][Choice - 1];
+			page_idx = 0;
 			return DISPLAY;
 		}
 		if (Choice == CurrentPage.size())
