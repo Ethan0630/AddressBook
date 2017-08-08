@@ -238,6 +238,8 @@ namespace address_book
 		for (Contact c : Contacts)
 		{
 			if (c.GetDisplayName().find(input) != std::string::npos) Results.push_back(c);
+			else if (c.GetFirstName().find(input) != std::string::npos) Results.push_back(c);
+			else if (c.GetLastName().find(input) != std::string::npos) Results.push_back(c);
 		}
 		return Results;
 	}

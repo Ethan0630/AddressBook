@@ -167,6 +167,7 @@ namespace methods
 			{
 				cout << "Enter Page Number (1-" << ContactList.size() << "): ";
 				getline(cin, request.Input);
+				if (request.Input.empty()) { cout << "Entry cannot be empty!\nTry again: "; continue; }
 				if (isCommand(request.Input))
 				{
 					Route CmdRoute = RunCommand(request);
@@ -179,7 +180,7 @@ namespace methods
 				if (!isNum) { cout << "Entry must be integral!\n"; continue; }
 				else Temp = stoi(request.Input);
 				if (!((Temp >= 1) && (Temp <= ContactList.size()))) { cout << "Entry was out of range!\n"; continue; }
-				page_idx = Temp;
+				page_idx = Temp - 1;
 				return LIST;
 			}
 		}
