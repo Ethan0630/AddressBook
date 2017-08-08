@@ -18,6 +18,8 @@ namespace contact {
 		bool VIP;
 		vector<pair<string, string>> Attributes;
 		static int ID_Num;
+
+		void Sort();
 	public:
 		Contact();
 		Contact(string FirstName, string LastName, string DisplayName, bool vip);

@@ -1,11 +1,11 @@
-Ethan|Basham|Ethan Basham|true|Cell Phone|(931) 414-8905|Email|ethan_basham@outlook.com
-Jane|Smith|Jane Smith|false
-Mark|Ford|Mark Ford|false
-John|Doe|John Doe|false|Friend|Bob
-Mike|Thomas|Mike Thomas|false
 Bob|Knox|Bob Knox|false
-Greg|Lewis|Greg Lewis|false
+Ethan|Basham|Ethan Basham|true|Cell Phone|(931) 414-8905|Email|ethan_basham@outlook.com
 George|Jones|George Jones|false
-Justin|Reed|Justin Reed|true
-Robert|Mathis|Robert Mathis|true|Phone|(931)939-2391
+Greg|Lewis|Greg Lewis|false
+Jane|Smith|Jane Smith|false
+John|Doe|John Doe|false|Friend|Bob
 Josh|Turner|Josh Turner|false
+Justin|Reed|Justin Reed|true
+Mark|Ford|Mark Ford|false
+Mike|Thomas|Mike Thomas|false
+Robert|Mathis|Robert Mathis|true|Phone|(931)939-2391
