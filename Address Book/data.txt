@@ -4,6 +4,7 @@ George|Jones|George Jones|false
 Greg|Lewis|Greg Lewis|false
 Jane|Smith|Jane Smith|false
 John|Doe|John Doe|false|Friend|Bob
+John|Henderson|John Henderson|false
 Josh|Turner|Josh Turner|false
 Justin|Reed|Justin Reed|true
 Mark|Ford|Mark Ford|false

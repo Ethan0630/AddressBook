@@ -31,4 +31,5 @@ namespace methods
 	Route EditChara(Request& request);
 	Route Search(Request& request);
 	Route VIPList(Request& request);
+	string DevTest(Request& request);
 }

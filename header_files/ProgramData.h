@@ -16,7 +16,7 @@ using namespace contact;
 using namespace str_manip;
 using namespace address_book;
 
-enum Route { NONE, MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS, REMOVE, EDIT, EDIT_CHARA, CLEAR, CURRENT, VIP };
+enum Route { NONE, MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS, REMOVE, EDIT, EDIT_CHARA, CLEAR, CURRENT, VIP, DEV };
 
 const string CmdError = "Command Format Error!\nPress [Enter] to continue ";
 
@@ -47,7 +47,11 @@ const std::vector<string> SpecialEntries = std::vector<string>({
 	"/addcharas",
 	"/remove",
 	"/vip",
-	"/edit"
+	"/edit",
+	"/save",
+	"/read",
+	"/out_path",
+	"/in_path"
 });
 
 class Request {
@@ -76,5 +80,6 @@ bool isEmpty(std::vector<std::string> inputs);
 
 Route RunCommand(Request& request);
 string RunCreate(Request& request);
+vector<string> SplitInput(string input);
 
 vector<vector<Contact>> Paginate(vector<Contact> query);

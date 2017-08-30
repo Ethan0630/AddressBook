@@ -70,7 +70,7 @@ bool isCommand(std::string input)
 bool isSpec(vector<string> inputs)
 {
 	vector<string> attrs = { "-d", "-t", "-f" };
-	return std::find_if(inputs.begin(), inputs.end(), [attrs](string v){
+	return std::find_if(inputs.begin(), inputs.end(), [attrs](string v) {
 		return std::find(attrs.begin(), attrs.end(), v) != attrs.end();
 	}) != inputs.end();
 }
@@ -95,19 +95,37 @@ Route RunCommand(Request& request)
 	{
 		str_manip::ClearScreen();
 	}
+	else if (request.Input == "/save")
+	{
+		request.Book.Save() ?
+			cout << "Address Book saved successfully!\nPress [Enter] to continue " :
+			cout << "Error occured while trying to save to file!\nPress [Enter] to continue ";			
+		string temp;
+		getline(std::cin, temp);
+	}
+	else if (request.Input == "/read")
+	{
+		request.Book.Read() ?
+			cout << "Address Book loaded successfully!\nPress [Enter] to continue " :
+			cout << "Error occured while trying to read from file!\nPress [Enter] to continue ";
+		string temp;
+		getline(std::cin, temp);
+	}
 	else if (request.Input == "/current")
 	{
 		std::cout << "Current Contact: " << request.CurrentContact.GetDisplayName() << endl;
 		std::cout << "Press [Enter] to continue ";
-		std::cin.ignore();
+		string temp;
+		getline(std::cin, temp);
 		str_manip::ClearScreen();
 	}
 	else if (Commands.find(request.Input) != Commands.end()) return Commands.at(request.Input);
 	else if (request.Input.find("/create") != string::npos)
 	{
 		cout << RunCreate(request);
-		cin.ignore();
-	}
+		string temp;
+		getline(std::cin, temp);
+	}	
 	return NONE;
 }
 
@@ -199,6 +217,54 @@ string RunCreate(Request& request)
 	}
 	request.Book.Add(NewContact);
 	return "Contact created successfully!\nPress [Enter] to continue ";
+}
+
+vector<string> SplitInput(string input)
+{
+	string Input = input;
+	string OrigInput = Input;
+
+	vector<string> MergedResults = vector<string>();
+	vector<string> QuotedResults = vector<string>();
+	vector<string> SingleResults = vector<string>();
+	vector<pair<string, string>> Charas = vector<pair<string, string>>();
+
+	std::size_t idx = Input.find('\"');
+	while (idx != std::string::npos)
+	{
+		std::size_t next_idx = Input.find('\"', idx + 1);
+		string Temp = Input.substr(idx, (next_idx - idx + 1));
+		QuotedResults.push_back(Temp);
+		Input.erase(idx, Temp.length());
+		idx = Input.find('\"');
+	}
+	SingleResults = str_manip::Str_SplitByChar(Input, ' ');
+
+	while (!QuotedResults.empty() && !SingleResults.empty())
+	{
+		if (OrigInput.find(QuotedResults[0]) < OrigInput.find(SingleResults[0]))
+		{
+			MergedResults.push_back(QuotedResults[0]);
+			QuotedResults.erase(QuotedResults.begin());
+		}
+		else
+		{
+			MergedResults.push_back(SingleResults[0]);
+			SingleResults.erase(SingleResults.begin());
+		}
+	}
+
+	if (QuotedResults.empty()) MergedResults.insert(MergedResults.end(), SingleResults.begin(), SingleResults.end());
+	else MergedResults.insert(MergedResults.end(), QuotedResults.begin(), QuotedResults.end());
+
+	for (int i = 0; i < MergedResults.size(); i++)
+	{
+		if ((MergedResults[i][0] == '\"') && (MergedResults[i][MergedResults[i].length() - 1] == '\"'))
+		{
+			MergedResults[i] = MergedResults[i].substr(1, MergedResults[i].length() - 2);
+		}
+	}
+	return MergedResults;
 }
 
 vector<vector<Contact>> Paginate(vector<Contact> query)

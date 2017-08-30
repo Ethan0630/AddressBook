@@ -23,6 +23,7 @@ namespace methods
 		case EDIT_CHARA: return EditChara(request);
 		case SEARCH: return Search(request);
 		case VIP: return VIPList(request);
+		case DEV: return (DevTest(request) == "Good Job") ? MAIN : MAIN;
 		}
 	}
 
@@ -30,7 +31,7 @@ namespace methods
 	{
 		str_manip::ClearScreen();
 		request.PrevRoute = MAIN;
-		Menu MainMenu = Menu({ "Contact List", "VIP Role", "New Contact", "Search Contacts", "Save & Exit" }, "Main Menu: ", request);
+		Menu MainMenu = Menu({ "Contact List", "VIP Role", "New Contact", "Search Contacts", "Dev Test", "Save & Exit" }, "Main Menu: ", request);
 		if (!MainMenu.RunMenu()) return request.CurrRoute;
 		switch (MainMenu.Curr_Selection())
 		{
@@ -38,7 +39,8 @@ namespace methods
 		case 2: return VIP;
 		case 3: return CREATE;
 		case 4: return SEARCH;
-		case 5: return EXIT;
+		case 5: return DEV;
+		case 6: return EXIT;
 		}
 	}
 
@@ -212,6 +214,7 @@ namespace methods
 
 	Route Remove(Request& request)
 	{
+		str_manip::ClearScreen();
 		cout << "Delete Contact\n";
 		string Heading = "Are you sure you wish to delete " + request.CurrentContact.GetDisplayName() + "?";
 		BoolMenu SureMenu = BoolMenu(Heading, request);
@@ -380,5 +383,97 @@ namespace methods
 		}
 		request.PrevRoute = VIP;
 		return LIST;
+	}
+
+	string DevTest(Request& request)
+	{
+		string Input = "\"Ethan H\" Basham \"Blackberry Slave\" -t \"Phone Number\"|\"(931) 939-2391\"";
+		cout << Input << endl;
+
+		vector<string> InputVec = SplitInput(Input);
+
+
+		bool vipset = false;
+		bool disset = false;
+		bool isvip = false;
+		string vip = "";
+		vector<string> Inputs = vector<string>();
+		vector<pair<string, string>> Attrs = vector<pair<string, string>>();
+
+		if (InputVec.size() < 3) return CmdError;
+		if (isEmpty(InputVec)) return CmdError;
+
+		// Get Characteristics
+		vector<string>::iterator colon_pos = std::find_if(InputVec.begin(), InputVec.end(), [](string v) { 
+				return v.find("|") != string::npos; 
+		});
+		while (colon_pos != InputVec.end())
+		{
+			if (*colon_pos == "|")
+			{
+				if ((colon_pos == InputVec.begin()) || (colon_pos == InputVec.end() - 1)) return CmdError;
+				vector<string> Attr = vector<string>({ *(colon_pos - 1), *(colon_pos + 1) });
+				if (isSpec(Attr)) return CmdError;
+				Attrs.push_back(pair<string, string>(Attr[0], Attr[1]));
+				InputVec.erase(colon_pos - 1, colon_pos + 2);
+			}
+			else if ((*colon_pos)[0] == '|')
+			{
+				if (colon_pos == InputVec.begin()) return CmdError;
+				if ((*colon_pos).find('|', 1) != string::npos) return CmdError;
+				vector<string> Attr = vector<string>({ *(colon_pos - 1), colon_pos->substr(1) });
+				if (isSpec(Attr)) return CmdError;
+				Attrs.push_back(pair<string, string>(Attr[0], Attr[1]));
+				InputVec.erase(colon_pos - 1, colon_pos + 1);
+			}
+			else if ((*colon_pos)[colon_pos->size() - 1] == '|')
+			{
+				if (colon_pos == InputVec.end()) return CmdError;
+				vector<string> Attr = vector<string>({ colon_pos->substr(0, colon_pos->size() - 1), *(colon_pos + 1) });
+				if (isSpec(Attr)) return CmdError;
+				Attrs.push_back(pair<string, string>(Attr[0], Attr[1]));
+				InputVec.erase(colon_pos, colon_pos + 2);
+			}
+			else return CmdError;
+			 
+			colon_pos = std::find_if(InputVec.begin(), InputVec.end(), [](string v) {
+				return v.find("|") != string::npos;
+			});
+		}
+
+		// Get Vip
+		vector<string>::iterator vip_pos = std::find_if(InputVec.begin(), InputVec.end(), [](string v) {
+			return (v == "-f") || (v == "-t");
+		});
+		if (vip_pos != InputVec.end())
+		{
+			isvip = (*vip_pos == "-t");
+			InputVec.erase(vip_pos, vip_pos + 1);
+			if (std::find_if(InputVec.begin(), InputVec.end(), [](string v) {
+				return (v == "-f") || (v == "-t");
+			}) != InputVec.end()) return CmdError;
+		}
+
+		if ((InputVec.size() > 3) || (InputVec.size() < 2)) return CmdError;
+
+		Inputs.push_back(InputVec[0]);
+		Inputs.push_back(InputVec[1]);
+		
+		string Temp = Inputs[0] + " " + Inputs[1];
+		if (InputVec.size() == 3) if (InputVec[2] != "-d") Temp = InputVec[2];
+		Inputs.push_back(Temp);
+
+		Contact NewContact = Contact(Inputs[0], Inputs[1], Inputs[2], isvip);
+		for (pair<string, string> Attr : Attrs)
+		{
+			NewContact.AddAttr(Attr.first, Attr.second);
+		}
+		
+		cout << endl << NewContact.DisplayFormat() << endl;
+
+		getchar();
+		return "Good Job";
+		//getline(std::cin, Input);
+
 	}
 }
