@@ -104,4 +104,29 @@ namespace menu
 		BoolMenu::BoolMenu() : Menu() {}
 		BoolMenu::BoolMenu(std::string heading, Request& req, std::string prompt) : Menu({ "Yes", "No" }, heading, req, prompt) {}
 		bool BoolMenu::GetBool() { return Curr_Selection() == 1; }
+
+		Route GetRangedInput(int min, int max, Request& request, string prompt)
+		{
+			int Temp;
+			while (1)
+			{
+				cout << prompt << ": ";
+				getline(cin, request.Input);
+				if (request.Input.empty()) { cout << "Entry cannot be empty!\nTry again: "; continue; }
+				if (isCommand(request.Input))
+				{
+					Route CmdRoute = RunCommand(request);
+					if (CmdRoute == NONE) continue;
+					return CmdRoute;
+				}
+				str_manip::Str_RemoveChar(request.Input, ' ');
+				bool isNum = true;
+				for (char c : request.Input) { if (!isdigit(c)) isNum = false; break; }
+				if (!isNum) { cout << "Entry must be integral!\n"; continue; }
+				else Temp = stoi(request.Input);
+				if (!((Temp >= min) && (Temp <= max))) { cout << "Entry was out of range!\n"; continue; }
+				request.list_idx = Temp - 1;
+				return LIST;
+			}
+		}
 }

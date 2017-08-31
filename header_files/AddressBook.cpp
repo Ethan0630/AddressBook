@@ -124,6 +124,12 @@ namespace address_book
 		return Results;
 	}
 
+	int AddressBook::SearchDname(std::string dname)
+	{
+		for (Contact c : Contacts) if (c.GetDisplayName() == dname) return c.GetID();
+		return -1;
+	}
+
 	std::vector<Contact> AddressBook::VIPRole()
 	{
 		std::vector<Contact> Results = std::vector<Contact>();

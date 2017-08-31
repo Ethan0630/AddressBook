@@ -16,9 +16,10 @@ using namespace contact;
 using namespace str_manip;
 using namespace address_book;
 
-enum Route { NONE, MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS, REMOVE, EDIT, EDIT_CHARA, CLEAR, CURRENT, VIP, DEV };
+enum Route { NONE, MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS, REMOVE, EDIT, EDIT_CHARA, CLEAR, CURRENT, VIP, ERR };
 
-const string CmdError = "Command Format Error!\nPress [Enter] to continue ";
+const string CmdError = "Command Format Error!\nPress any key to continue ";
+const string CmdContactNotFound = "Contact Not Found!\nPress any key to continue ";
 
 const std::unordered_map<std::string, Route> Commands = std::unordered_map<std::string, Route>({
 	{ "/main", MAIN },
@@ -30,7 +31,7 @@ const std::unordered_map<std::string, Route> Commands = std::unordered_map<std::
 	{ "/search", SEARCH },
 	{ "/display", DISPLAY },
 	{ "/addcharas", ADD_CHARAS },
-	{ "/remove", REMOVE },
+	{ "/delete", REMOVE },
 	{ "/vip", VIP },
 	{ "/edit", EDIT },
 });
@@ -45,7 +46,7 @@ const std::vector<string> SpecialEntries = std::vector<string>({
 	"/search",
 	"/display",
 	"/addcharas",
-	"/remove",
+	"/delete",
 	"/vip",
 	"/edit",
 	"/save",
@@ -63,7 +64,8 @@ public:
 	std::string Input;
 	std::vector<Contact> SearchResults;
 	std::vector<Contact> VIPRole;
-	string CurrentAttr;
+	std::string CurrentAttr;
+	int list_idx;
 
 	Request();
 	Request(AddressBook& book);
@@ -78,8 +80,8 @@ bool isSpec(std::vector<std::string> inputs);
 bool hasSpec(std::vector<std::string> inputs);
 bool isEmpty(std::vector<std::string> inputs);
 
-Route RunCommand(Request& request);
-string RunCreate(Request& request);
-vector<string> SplitInput(string input);
+string CheckNameInput(vector<string> Names);
 
 vector<vector<Contact>> Paginate(vector<Contact> query);
+vector<string> ListNav(int idx, int pages_num);
+string ListHeading(Request request, int idx, int pages_num);

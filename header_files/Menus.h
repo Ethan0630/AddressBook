@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include "ProgramData.h"
+#include "CommandControl.h"
 
 namespace menu
 {
@@ -50,4 +51,6 @@ namespace menu
 
 			bool GetBool();
 	};
+
+	Route GetRangedInput(int min, int max, Request& request, string prompt);
 }

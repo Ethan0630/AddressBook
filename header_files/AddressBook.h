@@ -34,6 +34,7 @@ namespace address_book
 		int First();
 		vector<Contact> List();
 		vector<Contact> Search(std::string keyword);
+		int SearchDname(std::string dname);
 		vector<Contact> VIPRole();
 		Contact Find(int id);													
 	};

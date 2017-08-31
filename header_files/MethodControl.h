@@ -5,11 +5,13 @@
 #include <iomanip>
 #include <unordered_map>
 #include "ProgramData.h"
+#include "CommandControl.h"
 #include "ErrorHandling.h"
 #include "Menus.h"
 #include "Contact.h"
 #include "AddressBook.h"
 #include "StringFunctions.h"
+#include "CommandControl.h"
 
 using namespace error_handling;
 using namespace menu;

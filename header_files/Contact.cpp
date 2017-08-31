@@ -148,6 +148,8 @@ namespace contact
 			Result += "\n\t" + Attr.first + ": " + Attr.second;
 		if (Result == DisplayName)
 			Result += "\n\tContact has no Info";
+		Result += "\n\tVIP Role: ";
+		Result += VIP ? "Yes" : "No";
 		return Result;
 	}
 

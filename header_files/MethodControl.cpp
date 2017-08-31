@@ -22,8 +22,7 @@ namespace methods
 		case EDIT: return Edit(request);
 		case EDIT_CHARA: return EditChara(request);
 		case SEARCH: return Search(request);
-		case VIP: return VIPList(request);
-		case DEV: return (DevTest(request) == "Good Job") ? MAIN : MAIN;
+		case VIP: return VIPList(request);		
 		}
 	}
 
@@ -31,16 +30,15 @@ namespace methods
 	{
 		str_manip::ClearScreen();
 		request.PrevRoute = MAIN;
-		Menu MainMenu = Menu({ "Contact List", "VIP Role", "New Contact", "Search Contacts", "Dev Test", "Save & Exit" }, "Main Menu: ", request);
+		Menu MainMenu = Menu({ "Contact List", "VIP Role", "New Contact", "Search Contacts", "Save & Exit" }, "Main Menu: ", request);
 		if (!MainMenu.RunMenu()) return request.CurrRoute;
 		switch (MainMenu.Curr_Selection())
 		{
 		case 1: return LIST;
 		case 2: return VIP;
 		case 3: return CREATE;
-		case 4: return SEARCH;
-		case 5: return DEV;
-		case 6: return EXIT;
+		case 4: return SEARCH;		
+		case 5: return EXIT;
 		}
 	}
 
@@ -54,25 +52,26 @@ namespace methods
 		for (int i = 0; i < 4;)
 		{
 			if (i < 3)
-			{				
+			{
 				cout << "Enter " << Prompts[i] << ": ";
 				getline(cin, request.Input);
+
+				// Check for Command
 				if (isCommand(request.Input))
 				{
 					Route CmdRoute = RunCommand(request);
 					if (CmdRoute == NONE) continue;
 					return CmdRoute;
 				}
-				if ((request.Input.empty() && (i != 2)) || hasSpec({ request.Input }) || 
-					isSpec({ request.Input }) || ((i == 2) && request.Book.DupName(request.Input)))
-				{
-					if (request.Input.empty() && (i != 2)) cout << Prompts[i] << " cannot be empty!\n";
-					else if (hasSpec({ request.Input })) cout << Prompts[i] << " cannot contain \'|\'\n";
-					else if (isSpec({ request.Input })) cout << request.Input << " is a command line special entry\n";
-					else if ((i == 2) && request.Book.DupName(request.Input)) cout << "Display name " << request.Input << " already exists\n";
-					continue;
-				}
-				if (request.Input.empty()) request.Input = Inputs[0] + " " + Inputs[1];
+
+				// Check for Errors
+				string err = "";
+				if (request.Input.empty()) err = Prompts[i] + " cannot be empty!\n";
+				else if (hasSpec({ request.Input })) err = Prompts[i] + " cannot contain \'|\'\n";
+				else if (isSpec({ request.Input })) err = request.Input + " is a command line special entry\n";
+				else if ((i == 2) && request.Book.DupName(request.Input)) err = "Display name " + request.Input + " already exists\n";
+				if (!err.empty()) { cout << err; continue; }
+				
 				Inputs.push_back(request.Input);
 			}
 			else
@@ -102,22 +101,23 @@ namespace methods
 			if (!i) cout << "Enter Attribute Name: ";
 			else cout << "Enter " << request.Input << ": ";
 			getline(cin, request.Input);
+			
+			// Check for Command
 			if (isCommand(request.Input))
 			{
 				Route CmdRoute = RunCommand(request);
 				if (CmdRoute == NONE) continue;
 				return CmdRoute;
 			}
-			if (request.Input.empty() || hasSpec({ request.Input }) || isSpec({ request.Input }) || 
-				((i == 1) && request.CurrentContact.hasAttr(request.Input)))
-			{
-				if (request.Input.empty()) cout << "Input cannot be empty!\n";
-				else if (hasSpec({ request.Input })) cout << "Input cannot contain \'|\'\n";
-				else if (isSpec({ request.Input })) cout << request.Input << " is a command line special entry\n";
-				else if ((i == 1) && request.CurrentContact.hasAttr(request.Input)) 
-					cout << "Attribute name " << request.Input << " already exists\n";
-				continue;
-			}
+			
+			// Check for Errors
+			string err = "";
+			if (request.Input.empty()) err = "Input cannot be empty!\n";
+			else if (hasSpec({ request.Input })) err = "Input cannot contain \'|\'\n";
+			else if (isSpec({ request.Input })) err = request.Input + " is a command line special entry\n";
+			else if ((i == 1) && request.CurrentContact.hasAttr(request.Input)) err = "Attribute name " + request.Input + " already exists\n";
+			if (!err.empty()) { cout << err; continue; }
+
 			Inputs.push_back(request.Input);
 		}
 		request.CurrentContact.AddAttr(Inputs[0], Inputs[1]);
@@ -136,66 +136,34 @@ namespace methods
 		if (request.PrevRoute == SEARCH) ContactList = Paginate(request.SearchResults);
 		else if (request.PrevRoute == VIP) ContactList = Paginate(request.VIPRole);
 		else ContactList = Paginate(request.Book.List());
-		static int page_idx = 0;
-		string PageHeading;
-		if (request.PrevRoute == SEARCH) PageHeading = "Search Results of \"" + request.Input + "\"";
-		else if (request.PrevRoute == VIP) PageHeading = "VIP Role";
-		else PageHeading = "Contact List : Page " + to_string(page_idx + 1) + " of " + to_string(ContactList.size());
+
+		// Create Options
 		vector<string> CurrentPage = vector<string>();
-		for (Contact c : ContactList[page_idx]) CurrentPage.push_back(c.GetDisplayName());
-		if (ContactList.size() == 1) CurrentPage.push_back("Back to Main Menu");
-		else if (!page_idx) CurrentPage.insert(CurrentPage.end(), { "Next Page", "Jump to Page", "Back to Main Menu" });
-		else if (page_idx == (ContactList.size() - 1)) CurrentPage.insert(CurrentPage.end(), { "Previous Page", "Jump to Page", "Back to Main Menu" });
-		else CurrentPage.insert(CurrentPage.end(), { "Next Page", "Previous Page", "Jump to Page", "Back to Main Menu" });
-		request.PrevRoute = LIST;
+		for (Contact c : ContactList[request.list_idx]) CurrentPage.push_back(c.GetDisplayName());
+		vector<string> NavOptions = ListNav(request.list_idx, ContactList.size());
+		CurrentPage.insert(CurrentPage.end(), NavOptions.begin(), NavOptions.end());
+		int MaxPages = ContactList.size(), Options = CurrentPage.size(), PageContacts = ContactList[request.list_idx].size();
+
+		// Display List
+		string PageHeading = ListHeading(request, request.list_idx, MaxPages);
 		Menu ContactListMenu = Menu(CurrentPage, PageHeading, request);
 		if (!ContactListMenu.RunMenu()) return request.CurrRoute;
 		int Choice = ContactListMenu.Curr_Selection();
-		if (Choice <= ContactList[page_idx].size())
+		request.PrevRoute = LIST;
+		
+		// Process Choice
+		if ((Choice <= PageContacts) || (Choice == Options)) request.list_idx = 0;
+		if (Choice <= PageContacts)
 		{
-			request.CurrentContact = ContactList[page_idx][Choice - 1];
-			page_idx = 0;
+			request.CurrentContact = ContactList[request.list_idx][Choice - 1];
 			return DISPLAY;
 		}
-		if (Choice == CurrentPage.size())
-		{
-			page_idx = 0;
-			return MAIN;
-		}
-		else if (Choice == (CurrentPage.size() - 1))
-		{
-			int Temp = page_idx;
-			while (1)
-			{
-				cout << "Enter Page Number (1-" << ContactList.size() << "): ";
-				getline(cin, request.Input);
-				if (request.Input.empty()) { cout << "Entry cannot be empty!\nTry again: "; continue; }
-				if (isCommand(request.Input))
-				{
-					Route CmdRoute = RunCommand(request);
-					if (CmdRoute == NONE) continue;
-					return CmdRoute;
-				}
-				str_manip::Str_RemoveChar(request.Input, ' ');
-				bool isNum = true;
-				for (char c : request.Input) { if (!isdigit(c)) isNum = false; break; }
-				if (!isNum) { cout << "Entry must be integral!\n"; continue; }
-				else Temp = stoi(request.Input);
-				if (!((Temp >= 1) && (Temp <= ContactList.size()))) { cout << "Entry was out of range!\n"; continue; }
-				page_idx = Temp - 1;
-				return LIST;
-			}
-		}
-		else if ((Choice == (ContactList[page_idx].size() + 1)) && (page_idx != (ContactList.size() - 1)))
-		{
-			page_idx++;
-			return LIST;
-		}
-		else
-		{
-			page_idx--;
-			return LIST;
-		}
+		if (Choice == Options) return MAIN;
+		if (Choice == (Options - 1))
+			return GetRangedInput(1, MaxPages, request, "Enter Page Number (1-" + to_string(MaxPages) + "): ");
+		if ((Choice == (PageContacts + 1)) && (request.list_idx != (MaxPages - 1))) request.list_idx++;
+		else request.list_idx--;
+		return LIST;
 	}
 
 	Route Display(Request& request)

@@ -1,5 +1,5 @@
 Bob|Knox|Bob Knox|false
-Ethan|Basham|Ethan Basham|true|Cell Phone|(931) 414-8905|Email|ethan_basham@outlook.com
+Ethan|Basham|Ethan Basham|false|Phone Number|(931) 939-2391
 George|Jones|George Jones|false
 Greg|Lewis|Greg Lewis|false
 Jane|Smith|Jane Smith|false
