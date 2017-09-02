@@ -51,6 +51,7 @@ const std::vector<string> SpecialEntries = std::vector<string>({
 	"/edit",
 	"/save",
 	"/read",
+	"/help",
 	"/out_path",
 	"/in_path"
 });

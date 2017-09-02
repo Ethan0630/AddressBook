@@ -23,4 +23,5 @@ string RunEdit(Request& request);
 Route RunDelete(Request& request);
 Route RunList(Request& request);
 Route RunVIP(Request& request);
+void DisplayHelpMenu(Request& request);
 vector<string> SplitInput(string input);

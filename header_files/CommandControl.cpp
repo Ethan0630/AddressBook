@@ -12,6 +12,10 @@ Route RunCommand(Request& request)
 	{
 		str_manip::ClearScreen();
 	}
+	else if (request.Input == "/help")
+	{
+		DisplayHelpMenu(request);
+	}
 	else if (request.Input == "/save")
 	{
 		request.Book.Save() ?
@@ -96,7 +100,9 @@ Route RunCommand(Request& request)
 	}
 	else if (request.Input.find("/addcharas") != string::npos)
 	{
-		cout << RunAddCharas(request);
+		string S = RunAddCharas(request);
+		if (S == "/addcharas") return ADD_CHARAS;
+		cout << S;
 		getchar();
 	}
 	return NONE;
@@ -212,6 +218,15 @@ string RunAddCharas(Request& request)
 {
 	request.Input.erase(0, 11);
 	vector<string> InputVec = SplitInput(request.Input);
+
+	if (InputVec.size() == 1)
+	{
+		int EditC = request.Book.SearchDname(InputVec[0]);
+		if (EditC == -1) return CmdContactNotFound;
+		request.CurrContact(EditC);
+		return "/addcharas";
+	}
+
 	vector<pair<string, string>> Attrs = vector<pair<string, string>>();
 
 	// Get Characteristics
@@ -578,6 +593,36 @@ Route RunVIP(Request& request)
 	request.list_idx = Temp - 1;
 	request.PrevRoute = VIP;
 	return LIST;
+}
+
+void DisplayHelpMenu(Request& request)
+{
+	str_manip::ClearScreen();
+	cout <<
+		"Help Menu: \n\n" <<
+		"\t{} - optional; [] - required; | - delimeter; ~ - multiple\n\n" <<
+		"\t/main\n" <<
+		"\t/exit\n" <<
+		"\t/clear\n\n" <<
+		"\t/create\n" <<
+		"\t/create [fname] [lname] {-d,dname} {-t,-f} ~(attrName|attrVal}\n" <<
+		"\t/current {dname}\n" <<
+		"\t/display {dname}\n" <<
+		"\t/edit {dname}\n" <<
+		"\t/edit {fname lname} {-d,-d=dname} {-t,-f} {attrName attrName2|attrVal2}\n" <<
+		"\t/edit [dname] {fname lname} {-d,-d=dname} {-t,-f} {attrName attrName2|attrVal2}\n" <<
+		"\t/addcharas {dname}\n" <<
+		"\t/addcharas ~{attrName|attrVal}\n" <<
+		"\t/addcharas [dname] ~{attrName|attrVal}\n" <<
+		"\t/delete {-f}\n" <<
+		"\t/delete [dname] {-f}\n" <<
+		"\t/search\n" <<
+		"\t/list {page_num}\n" <<
+		"\t/vip {page_num}\n\n" <<
+		"\tSpaced input can be indicated by wrapping in \"s\n" <<
+		"Press any key to continue ";
+	getchar();
+	str_manip::ClearScreen();
 }
 
 vector<string> SplitInput(string input)
