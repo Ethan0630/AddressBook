@@ -221,10 +221,13 @@ string RunAddCharas(Request& request)
 
 	if (InputVec.size() == 1)
 	{
-		int EditC = request.Book.SearchDname(InputVec[0]);
-		if (EditC == -1) return CmdContactNotFound;
-		request.CurrContact(EditC);
-		return "/addcharas";
+		if (InputVec[0].find("|") == string::npos)
+		{
+			int EditC = request.Book.SearchDname(InputVec[0]);
+			if (EditC == -1) return CmdContactNotFound;
+			request.CurrContact(EditC);
+			return "/addcharas";
+		}
 	}
 
 	vector<pair<string, string>> Attrs = vector<pair<string, string>>();
@@ -314,10 +317,16 @@ string RunEdit(Request& request)
 
 	if (InputVec.size() == 1)
 	{
-		int EditC = request.Book.SearchDname(InputVec[0]);
-		if (EditC == -1) return CmdContactNotFound;
-		request.CurrContact(EditC);
-		return "/edit";
+		if (InputVec[0].find("|") != string::npos);
+		else if ((InputVec[0].size() > 1) && (InputVec[0].substr(0, 2) == "-d"));
+		else if (isSpec(InputVec));
+		else
+		{
+			int EditC = request.Book.SearchDname(InputVec[0]);
+			if (EditC == -1) return CmdContactNotFound;
+			request.CurrContact(EditC);
+			return "/edit";
+		}
 	}
 
 	bool vipset = false;

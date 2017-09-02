@@ -92,17 +92,23 @@ namespace str_manip
 		SetConsoleCursorPosition(hStdOut, homeCoords);
 	}
 
-	Error* Str_CheckIntInRange(const std::string& str, int min, int max)
+	/*Error* Str_CheckIntInRange(const std::string& str, int min, int max)
 	{
 		Error* Result = new Err_NoErr();
 		int Num = StrToInt(str, Result);
 		if (*(Result)) return Result;
 		if (!((Num >= min) && (Num <= max))) return new Err_OutOfRange();
 		return Result;
-	}
+	}*/
 
 	std::string Divider(char c)
 	{
 		return std::string(65, c);
+	}
+
+	std::string Str_ToLower(std::string val)
+	{
+		for (int i = 0; i < val.size(); i++) val[i] = tolower(val[i]);
+		return val;
 	}
 }

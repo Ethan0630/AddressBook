@@ -10,7 +10,7 @@ namespace address_book
 		std::sort(Contacts.begin(), Contacts.end(),								
 			[](Contact l_val, Contact r_val)										
 		{																						
-			return l_val.GetDisplayName() < r_val.GetDisplayName();													
+			return str_manip::Str_ToLower(l_val.GetDisplayName()) < str_manip::Str_ToLower(r_val.GetDisplayName());
 		});
 	}
 

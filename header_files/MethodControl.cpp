@@ -336,6 +336,12 @@ namespace methods
 			break;
 		}
 		request.SearchResults = request.Book.Search(request.Input);
+		if (request.SearchResults.empty())
+		{
+			cout << "Nothing Found!\nPress any key to continue ";
+			getchar();
+			return SEARCH;
+		}
 		request.PrevRoute = SEARCH;
 		return LIST;
 	}
