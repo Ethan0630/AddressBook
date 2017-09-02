@@ -67,8 +67,32 @@ Route RunCommand(Request& request)
 	}
 	else if (request.Input.find("/edit") != string::npos)
 	{
-		cout << RunEdit(request);
+		string S = RunEdit(request);
+		if (S == "/edit") return EDIT;
+		cout << S;
 		getchar();
+	}
+	else if (request.Input.find("/display") != string::npos)
+	{
+		request.Input.erase(0, 9);
+		vector<string> InputVec = SplitInput(request.Input);
+		int EditC = request.Book.SearchDname(InputVec[0]);
+		if (EditC == -1) { cout << CmdContactNotFound; return NONE; }
+		request.CurrContact(EditC);
+		return DISPLAY;
+	}
+	else if (request.Input.find("/current") != string::npos)
+	{
+		request.Input.erase(0, 9);
+		vector<string> InputVec = SplitInput(request.Input);
+		int EditC = request.Book.SearchDname(InputVec[0]);
+		if (EditC == -1) { cout << CmdContactNotFound; return NONE; }
+		request.CurrContact(EditC);
+		std::cout << "Current Contact Changed: " << request.CurrentContact.GetDisplayName() << endl;
+		std::cout << "Press [Enter] to continue ";
+		string temp;
+		getline(std::cin, temp);
+		str_manip::ClearScreen();
 	}
 	else if (request.Input.find("/addcharas") != string::npos)
 	{
@@ -272,6 +296,14 @@ string RunEdit(Request& request)
 {
 	request.Input.erase(0, 6);
 	vector<string> InputVec = SplitInput(request.Input);
+
+	if (InputVec.size() == 1)
+	{
+		int EditC = request.Book.SearchDname(InputVec[0]);
+		if (EditC == -1) return CmdContactNotFound;
+		request.CurrContact(EditC);
+		return "/edit";
+	}
 
 	bool vipset = false;
 	bool disset = false;
