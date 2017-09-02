@@ -65,6 +65,11 @@ Route RunCommand(Request& request)
 		cout << RunCreate(request);
 		getchar();
 	}
+	else if (request.Input.find("/edit") != string::npos)
+	{
+		cout << RunEdit(request);
+		getchar();
+	}
 	else if (request.Input.find("/addcharas") != string::npos)
 	{
 		cout << RunAddCharas(request);
@@ -261,6 +266,183 @@ string RunAddCharas(Request& request)
 	for (pair<string, string> Attr : Attrs) request.CurrentContact.AddAttr(Attr.first, Attr.second);
 	request.Book.Edit(request.CurrentContact.GetID(), request.CurrentContact);
 	return "Characteristics Updated Successfully!\nPress any key to continue ";
+}
+
+string RunEdit(Request& request)
+{
+	request.Input.erase(0, 6);
+	vector<string> InputVec = SplitInput(request.Input);
+
+	bool vipset = false;
+	bool disset = false;
+	bool isvip = false;
+	bool nameset = false;
+	string vip = "";
+	string Dname = "";
+	string Fname = "";
+	string Lname = "";
+	vector<string> OrigAttrNames = vector<string>();
+	vector<pair<string, string>> Attrs = vector<pair<string, string>>();
+
+	if (isEmpty(InputVec)) return CmdError;
+
+	// Get Characteristics
+	vector<string>::iterator colon_pos = std::find_if(InputVec.begin(), InputVec.end(), [](string v) {
+		return v.find("|") != string::npos;
+	});
+	while (colon_pos != InputVec.end())
+	{
+		if (*colon_pos == "|")
+		{
+			if ((colon_pos == InputVec.begin()) || (colon_pos == InputVec.end() - 1) || (colon_pos == InputVec.begin() + 1)) return CmdError;
+			vector<string> Attr = vector<string>({ *(colon_pos - 2), *(colon_pos - 1), *(colon_pos + 1) });
+			if (isSpec(Attr)) return CmdError;
+			for (string a : Attr) { if (a.size() > 2) if (a.substr(0, 3) == "-d=") return CmdError; }
+			OrigAttrNames.push_back(Attr[0]);
+			Attrs.push_back(pair<string, string>(Attr[1], Attr[2]));
+			InputVec.erase(colon_pos - 2, colon_pos + 2);
+		}
+		else if ((*colon_pos)[0] == '|')
+		{
+			if (colon_pos == InputVec.begin() || (colon_pos == InputVec.begin() + 1)) return CmdError;
+			if ((*colon_pos).find('|', 1) != string::npos) return CmdError;
+			vector<string> Attr = vector<string>({ *(colon_pos - 2), *(colon_pos - 1), colon_pos->substr(1) });
+			if (isSpec(Attr)) return CmdError;
+			for (string a : Attr) { if (a.size() > 2) if (a.substr(0, 3) == "-d=") return CmdError; }
+			OrigAttrNames.push_back(Attr[0]);
+			Attrs.push_back(pair<string, string>(Attr[0], Attr[1]));
+			InputVec.erase(colon_pos - 2, colon_pos + 1);
+		}
+		else if ((*colon_pos)[colon_pos->size() - 1] == '|')
+		{
+			if (colon_pos == InputVec.end() || (colon_pos == InputVec.begin())) return CmdError;
+			vector<string> Attr = vector<string>({ *(colon_pos - 1), colon_pos->substr(0, colon_pos->size() - 1), *(colon_pos + 1) });
+			if (isSpec(Attr)) return CmdError;
+			for (string a : Attr) { if (a.size() > 2) if (a.substr(0, 3) == "-d=") return CmdError; }
+			OrigAttrNames.push_back(Attr[0]);
+			Attrs.push_back(pair<string, string>(Attr[0], Attr[1]));
+			InputVec.erase(colon_pos - 1, colon_pos + 2);
+		}
+		else
+		{
+			if (colon_pos == InputVec.begin()) return CmdError;
+			vector<string> Attr = Str_SplitByChar(*colon_pos, '|');
+			if (isEmpty(Attr)) return CmdError;
+			if (Attr.size() != 2) return CmdError;
+			if (isSpec(Attr)) return CmdError;
+			OrigAttrNames.push_back(*(colon_pos - 1));
+			vector<string> attrs = { "-d", "-t", "-f" };
+			for (string a : attrs) if (a == *(colon_pos - 1)) return CmdError;
+			Attrs.push_back(pair<string, string>(Attr[0], Attr[1]));
+			InputVec.erase(colon_pos - 1, colon_pos + 1);
+		}
+
+		colon_pos = std::find_if(InputVec.begin(), InputVec.end(), [](string v) {
+			return v.find("|") != string::npos;
+		});
+	}
+
+	for (int i = 0; i < Attrs.size(); i++)
+	{
+		string name = Attrs[i].first;
+		bool dup = std::find_if(std::begin(Attrs) + i + 1, std::end(Attrs),
+			[name](pair<string, string> val)
+		{
+			return val.first == name;
+		}) != Attrs.end();
+		if (dup) return "You can't repeat Attribute Names\nPress any key to continue";
+	}
+
+	// Get Vip
+	vector<string>::iterator vip_pos = std::find_if(InputVec.begin(), InputVec.end(), [](string v) {
+		return (v == "-f") || (v == "-t");
+	});
+	if (vip_pos != InputVec.end())
+	{
+		vipset = true;
+		isvip = (*vip_pos == "-t");
+		InputVec.erase(vip_pos, vip_pos + 1);
+		if (std::find_if(InputVec.begin(), InputVec.end(), [](string v) {
+			return (v == "-f") || (v == "-t");
+		}) != InputVec.end()) return CmdError;
+	}
+
+	if (InputVec.size() > 4) return CmdError;
+
+	// Get New Dname
+	vector<string>::iterator dname_pos = std::find_if(InputVec.begin(), InputVec.end(), [](string v) {
+		if (v.size() > 1) 
+			return v.substr(0, 2) == "-d";
+	});
+	if (dname_pos != InputVec.end())
+	{
+		if ((*dname_pos).size() > 2)
+		{
+			if ((*dname_pos)[2] != '=') return CmdError;
+			if (dname_pos->size() == 3)
+			{
+				if (dname_pos == InputVec.end()) return CmdError;
+				Dname = *(dname_pos + 1);
+				InputVec.erase(dname_pos, dname_pos + 2);
+			}
+			else
+			{
+				Dname = (*dname_pos).substr(3);
+				if (Dname.empty()) return CmdError;
+				InputVec.erase(dname_pos, dname_pos + 1);
+			}			
+		}
+		if (std::find_if(InputVec.begin(), InputVec.end(), [](string v) {
+			if (v.size() > 1)
+				return v.substr(0, 2) == "-d";
+		}) != InputVec.end()) return CmdError;
+	}
+
+	if (InputVec.size() > 3) return CmdError;
+
+	if ((InputVec.size() == 3) || (InputVec.size() == 1))
+	{
+		int EditC = request.Book.SearchDname(InputVec[0]);
+		if (EditC == -1) return CmdContactNotFound;
+		request.CurrContact(EditC);
+	}
+
+	if (!vipset) isvip = request.CurrentContact.isVIP();
+	if (InputVec.size() > 1) nameset = true;
+	int idx = InputVec.size() - 2;
+
+	Fname = (InputVec.size() > 1) ? InputVec[idx] : request.CurrentContact.GetFirstName();
+	Lname = (InputVec.size() > 1) ? InputVec[idx + 1] : request.CurrentContact.GetLastName();
+	
+	if (Dname.empty())
+	{
+		if ((request.CurrentContact.GetDisplayName() == (request.CurrentContact.GetFirstName() + " " + request.CurrentContact.GetLastName())) && nameset)
+			Dname = Fname + " " + Lname;
+		else Dname = request.CurrentContact.GetDisplayName();
+	}
+
+	if (request.Book.DupName(Dname, request.CurrentContact.GetID())) return "Name already taken\nPress any key to continue ";
+	for (int i = 0; i < Attrs.size(); i++)
+	{
+		if (request.CurrentContact.hasAttr(Attrs[i].first) && (Attrs[i].first != OrigAttrNames[i]))
+			return "Attribute name " + Attrs[i].first + " is already used";
+	}
+
+	request.CurrentContact.SetDisplayName(Dname);
+	request.CurrentContact.SetFirstName(Fname);
+	request.CurrentContact.SetLastName(Lname);
+	request.CurrentContact.SetVIP(isvip);
+
+	for (int i = 0; i < Attrs.size(); i++)
+	{
+		if (request.CurrentContact.hasAttr(OrigAttrNames[i]))
+			request.CurrentContact.RemoveAttr(OrigAttrNames[i]);
+		request.CurrentContact.AddAttr(Attrs[i].first, Attrs[i].second);
+	}
+
+	request.Book.Edit(request.CurrentContact.GetID(), request.CurrentContact);
+
+	return "Contact edited successfully\nPress any key to continue ";
 }
 
 Route RunDelete(Request& request)

@@ -1,5 +1,4 @@
-Bob|Knox|Bob Knox|false|Age|47|Married|No
-Ethan|Basham|Ethan Basham|false|Age|17|Email|ethan_basham@outlook.com|Phone Number|(931) 939-2391
+Ethan|Basham|Ethan Basham|true|Age|17|Email|ethan_basham@outlook.com|Phone Number|(931) 939-2391
 George|Jones|George Jones|false
 Greg|Lewis|Greg Lewis|false
 Jane|Smith|Jane Smith|false

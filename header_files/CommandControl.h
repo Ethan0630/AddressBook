@@ -19,6 +19,7 @@ using namespace address_book;
 Route RunCommand(Request& request);
 string RunCreate(Request& request);
 string RunAddCharas(Request& request);
+string RunEdit(Request& request);
 Route RunDelete(Request& request);
 Route RunList(Request& request);
 Route RunVIP(Request& request);
