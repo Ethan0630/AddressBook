@@ -53,7 +53,8 @@ const std::vector<string> SpecialEntries = std::vector<string>({
 	"/read",
 	"/help",
 	"/out_path",
-	"/in_path"
+	"/in_path",
+	"/back"
 });
 
 class Request {
@@ -61,6 +62,7 @@ public:
 	AddressBook Book;
 	Contact CurrentContact;
 	Route PrevRoute;
+	Route AltPrevRoute;
 	Route CurrRoute;
 	std::string Input;
 	std::vector<Contact> SearchResults;

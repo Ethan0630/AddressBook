@@ -161,4 +161,14 @@ namespace contact
 			return val.first == name;
 		}) != Attributes.end();
 	}
+
+	int Contact::AttrContainsNeedle(std::string needle)
+	{
+		for (int i = 0; i < Attributes.size(); i++)
+		{
+			if (Attributes[i].first.find(needle) != string::npos) return i;
+			if (Attributes[i].second.find(needle) != string::npos) return i;
+		}
+		return -1;
+	}
 }

@@ -16,6 +16,11 @@ Route RunCommand(Request& request)
 	{
 		DisplayHelpMenu(request);
 	}
+	else if (request.Input == "/back")
+	{
+		if ((request.PrevRoute == VIP) || (request.PrevRoute == SEARCH)) return request.AltPrevRoute;
+		return request.PrevRoute;
+	}
 	else if (request.Input == "/save")
 	{
 		request.Book.Save() ?
@@ -38,7 +43,6 @@ Route RunCommand(Request& request)
 		std::cout << "Press [Enter] to continue ";
 		string temp;
 		getline(std::cin, temp);
-		str_manip::ClearScreen();
 	}
 	else if (request.Input == "/list")
 	{

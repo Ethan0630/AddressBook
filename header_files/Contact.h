@@ -47,5 +47,6 @@ namespace contact {
 		string DisplayFormat();
 
 		bool hasAttr(string name);
+		int AttrContainsNeedle(std::string needle);
 	};
 }

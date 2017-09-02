@@ -75,9 +75,12 @@ namespace menu
 				request->Input = Input;
 				if (isCommand(request->Input))
 				{
+					Route OrigRoute = request->CurrRoute;
 					request->CurrRoute = RunCommand(*request);
 					if (request->CurrRoute == NONE)
 					{
+						if (OrigRoute == LIST) { request->CurrRoute = LIST; return 0; }
+						str_manip::ClearScreen();
 						DisplayMenu();
 						continue;
 					}

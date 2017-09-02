@@ -120,6 +120,7 @@ namespace address_book
 			if (c.GetDisplayName().find(input) != std::string::npos) Results.push_back(c);
 			else if (c.GetFirstName().find(input) != std::string::npos) Results.push_back(c);
 			else if (c.GetLastName().find(input) != std::string::npos) Results.push_back(c);
+			else if (c.AttrContainsNeedle(input) != -1) Results.push_back(c);
 		}
 		return Results;
 	}

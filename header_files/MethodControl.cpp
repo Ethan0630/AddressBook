@@ -173,6 +173,7 @@ namespace methods
 		vector<string> Options = { "Edit", "Delete", "Back", "Back to Main" };
 		Menu OptionsMenu = Menu(Options, "Contact Options: ", request);
 		if (!OptionsMenu.RunMenu()) return request.CurrRoute;
+		request.PrevRoute = DISPLAY;
 		int Choice = OptionsMenu.Curr_Selection();
 		if (Choice == 4) return MAIN;
 		if (Choice == 3) return LIST;
@@ -334,7 +335,7 @@ namespace methods
 				continue;
 			}
 			break;
-		}
+		}		
 		request.SearchResults = request.Book.Search(request.Input);
 		if (request.SearchResults.empty())
 		{
@@ -342,6 +343,7 @@ namespace methods
 			getchar();
 			return SEARCH;
 		}
+		request.AltPrevRoute = SEARCH;
 		request.PrevRoute = SEARCH;
 		return LIST;
 	}
@@ -355,6 +357,7 @@ namespace methods
 			cin.ignore();
 			return MAIN;
 		}
+		request.AltPrevRoute = request.PrevRoute;
 		request.PrevRoute = VIP;
 		return LIST;
 	}
