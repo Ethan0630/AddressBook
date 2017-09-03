@@ -16,7 +16,8 @@ using namespace contact;
 using namespace str_manip;
 using namespace address_book;
 
-enum Route { NONE, MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS, REMOVE, EDIT, EDIT_CHARA, CLEAR, CURRENT, VIP, ERR };
+enum Route { NONE, MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS, REMOVE, EDIT, EDIT_CHARA, CLEAR, CURRENT, 
+	VIP, SETTINGS, BOOK_MNGR, EDIT_BOOK, CREATE_BOOK, CHANGE_BOOK };
 
 const string CmdError = "Command Format Error!\nPress any key to continue ";
 const string CmdContactNotFound = "Contact Not Found!\nPress any key to continue ";
@@ -34,6 +35,8 @@ const std::unordered_map<std::string, Route> Commands = std::unordered_map<std::
 	{ "/delete", REMOVE },
 	{ "/vip", VIP },
 	{ "/edit", EDIT },
+	{ "/settings", SETTINGS},
+	{ "/book", BOOK_MNGR }
 });
 
 const std::vector<string> SpecialEntries = std::vector<string>({
@@ -54,7 +57,9 @@ const std::vector<string> SpecialEntries = std::vector<string>({
 	"/help",
 	"/out_path",
 	"/in_path",
-	"/back"
+	"/back",
+	"/settings",
+	"/book"
 });
 
 class Request {

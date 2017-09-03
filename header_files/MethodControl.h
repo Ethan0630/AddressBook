@@ -33,5 +33,9 @@ namespace methods
 	Route EditChara(Request& request);
 	Route Search(Request& request);
 	Route VIPList(Request& request);
-	string DevTest(Request& request);
+	Route Settings(Request& request);
+	Route BookManager(Request& request);
+	Route EditBook(Request& request);
+	Route CreateBook(Request& request);
+	Route ChangeBook(Request& request);
 }

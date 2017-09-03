@@ -18,11 +18,19 @@ namespace address_book
 	{
 		Contacts = std::vector<Contact>();
 		Path = "";
+		Name = "";
 	}
 
 	AddressBook::AddressBook(std::string path)
 	{
 		Contacts = std::vector<Contact>();
+		Path = path;
+	}
+
+	AddressBook::AddressBook(std::string name, std::string path)
+	{
+		Contacts = std::vector<Contact>();
+		Name = name;
 		Path = path;
 	}
 
@@ -149,4 +157,12 @@ namespace address_book
 			return C.GetID() == id;
 		}));
 	}
+
+	std::string AddressBook::GetName() { return Name; }
+
+	std::string AddressBook::GetPath() { return Path; }
+
+	void AddressBook::ChangeName(std::string name) { Name = name; }
+
+	void AddressBook::ChangePath(std::string path) { Path = path; }
 }

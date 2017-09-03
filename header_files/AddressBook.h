@@ -19,11 +19,13 @@ namespace address_book
 		std::vector<Contact> Contacts;											// field - contact_list
 
 		std::string Path;
+		std::string Name;
 		void Sort();
 	public:
 		// Constructor
 		AddressBook();															// constructor - default constructor
 		AddressBook(std::string path);											// constructor - complex, take filestream objects
+		AddressBook(std::string name, std::string path);
 
 		void Add(const Contact& c);												// edit - add contact to book
 		void Edit(int id, Contact& c);											// edit - edit existing contact
@@ -36,6 +38,10 @@ namespace address_book
 		vector<Contact> Search(std::string keyword);
 		int SearchDname(std::string dname);
 		vector<Contact> VIPRole();
-		Contact Find(int id);													
+		Contact Find(int id);
+		std::string GetName();
+		std::string GetPath();
+		void ChangeName(std::string name);
+		void ChangePath(std::string path);
 	};
 }
