@@ -18,8 +18,7 @@ int main()
 		std::getchar();
 		return 0;
 	}
-	string Path = Case.GetCurrent().GetName() + ".book";
-	AddressBook Book = AddressBook("Default");
+	AddressBook Book = AddressBook(Case.GetCurrent().GetName());
 	if (!Book.Read())
 	{
 		std::cout << "Error while reading initial file input!\n"

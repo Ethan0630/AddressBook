@@ -142,6 +142,13 @@ namespace methods
 		else if (request.PrevRoute == VIP) ContactList = Paginate(request.VIPRole);
 		else ContactList = Paginate(request.Book.List());
 
+		if (ContactList.empty())
+		{
+			cout << "List is empty!\nPress any key to continue ";
+			getchar();
+			return MAIN;
+		}
+
 		// Create Options
 		vector<string> CurrentPage = vector<string>();
 		for (Contact c : ContactList[request.list_idx]) CurrentPage.push_back(c.GetDisplayName());
@@ -384,9 +391,12 @@ namespace methods
 			Page.push_back(option);
 		}
 		if (Books.size() < MAX_BOOKS) Page.push_back("Create New Book");
+		Page.push_back("Back to Main Menu");
+		request.PrevRoute = BOOK_MNGR;
 		Menu BookMenu = Menu(Page, "Manage Books: ", request);
 		if (!BookMenu.RunMenu()) return request.CurrRoute;
-		if (BookMenu.Curr_Selection() == BookMenu.NumOfSelections()) return CREATE_BOOK;
+		if (BookMenu.Curr_Selection() == BookMenu.NumOfSelections()) return MAIN;
+		else if ((Books.size() < MAX_BOOKS) && (BookMenu.Curr_Selection() == BookMenu.NumOfSelections() - 1)) return CREATE_BOOK;
 		else
 		{
 			request.edit_case = BookMenu.Curr_Selection() - 1;
@@ -399,7 +409,7 @@ namespace methods
 	{
 		str_manip::ClearScreen();
 		std::string Bname = request.Case.List()[request.edit_case].GetName();
-		Menu EditMenu = Menu({"Edit Name", "Delete"}, "Edit Book: ", request);
+		Menu EditMenu = Menu({"Edit Name", "Swap to this Book", "Delete", "Back to Book Manager"}, "Edit Book: " + Bname, request);
 		if (!EditMenu.RunMenu()) return request.CurrRoute;
 		if (EditMenu.Curr_Selection() == 1)
 		{
@@ -426,14 +436,75 @@ namespace methods
 				if (!err.empty()) { cout << err; continue; }
 				break;
 			}
+			AddressBook NewBook = AddressBook(request.Input);
+			request.Case.Edit(Bname, NewBook);
+			return EDIT_BOOK;
 		}
-		else
+		else if (EditMenu.Curr_Selection() == 2)
 		{
-			BoolMenu SureMenu = BoolMenu("Are you sure you want to delete" + Bname + "?", request);
-			if (!SureMenu.RunMenu()) return request.CurrRoute;
-
+			if (!request.Book.Save())
+			{
+				"Error while writing file output\nPress any key to exit: ";
+				getchar();
+				return EXIT;
+			}
+			request.Case.ChangeCurrent(Bname);
+			request.Book = request.Case.GetCurrent();
+			if (!request.Book.Read())
+			{
+				"Error while reading file input\nPress any key to exit: ";
+				getchar();
+				return EXIT;
+			}
+			request.CurrentContact = request.Book.Find(request.Book.First());
 		}
-		return MAIN;
+		else if (EditMenu.Curr_Selection() == 3)
+		{
+			BoolMenu SureMenu = BoolMenu("Are you sure you want to delete " + Bname + "?", request);
+			if (!SureMenu.RunMenu()) return request.CurrRoute;
+			if (SureMenu.Curr_Selection() == 2) return EDIT_BOOK;
+			string Path = Bname + ".book";
+			if (remove(Path.c_str()))
+			{
+				"Error while writing file output\nPress any key to exit: ";
+				getchar();
+				return EXIT;
+			}
+			else
+			{
+				request.Case.Delete(Bname);
+				if (request.Book.GetName() == Bname)
+				{
+					if (request.Case.List().empty())
+					{
+						AddressBook NewBook = AddressBook("Default");
+						if (!NewBook.Save())
+						{
+							"Error while creating file\nPress any key to exit: ";
+							getchar();
+							return EXIT;
+						}
+						request.Case.ChangeCurrent(NewBook.GetName());
+						request.Book = request.Case.GetCurrent();
+						request.CurrentContact = Contact();
+					}
+					else
+					{
+						AddressBook FirstBook = request.Case.List()[0];
+						request.Case.ChangeCurrent(FirstBook.GetName());
+						request.Book = request.Case.GetCurrent();
+						if (!request.Book.Read())
+						{
+							"Error while reading file input\nPress any key to exit: ";
+							getchar();
+							return EXIT;
+						}
+						request.CurrentContact = request.Book.Find(request.Book.First());
+					}
+				}
+			}
+		}
+		return BOOK_MNGR;
 	}
 
 	Route CreateBook(Request& request)
@@ -463,6 +534,13 @@ namespace methods
 			break;
 		}
 		AddressBook NewBook = AddressBook(request.Input);
+		request.Case.Add(NewBook);
+		if (!NewBook.Save())
+		{
+			"Error while creating file\nPress any key to exit: ";
+			getchar();
+			return EXIT;
+		}
 		BoolMenu SwitchMenu = BoolMenu("Would you like to switch to this book?", request);
 		if (!SwitchMenu.RunMenu()) return request.CurrRoute;
 		if (SwitchMenu.GetBool()) 
@@ -470,10 +548,17 @@ namespace methods
 			if (!request.Book.Save())
 			{
 				"Error while writing file output\nPress any key to exit: ";
+				getchar();
 				return EXIT;
 			}
 			request.Case.ChangeCurrent(NewBook.GetName());
 			request.Book = request.Case.GetCurrent();
+			if (!request.Book.Read())
+			{
+				"Error while reading file input\nPress any key to exit: ";
+				getchar();
+				return EXIT;
+			}
 			request.CurrentContact = Contact();
 		}
 		return BOOK_MNGR;

@@ -145,11 +145,12 @@ namespace address_book
 
 	Contact AddressBook::Find(int id)
 	{
-		return *(std::find_if(std::begin(Contacts), std::end(Contacts),
+		vector<Contact>::iterator Results = std::find_if(std::begin(Contacts), std::end(Contacts),
 			[id](Contact C)
 		{
 			return C.GetID() == id;
-		}));
+		});
+		return (Results == Contacts.end()) ? Contact() : *Results;
 	}
 
 	std::string AddressBook::GetName() { return Name; }

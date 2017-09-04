@@ -98,7 +98,7 @@ namespace book_case
 		if (input == exception) return false;
 		return std::find_if(Books.begin(), Books.end(), [input](AddressBook b) {
 			return b.GetName() == input;
-		}) == Books.end();
+		}) != Books.end();
 	}
 
 	std::vector<AddressBook> BookCase::List()
