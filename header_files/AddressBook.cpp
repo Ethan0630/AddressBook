@@ -17,21 +17,13 @@ namespace address_book
 	AddressBook::AddressBook()
 	{
 		Contacts = std::vector<Contact>();
-		Path = "";
 		Name = "";
 	}
 
-	AddressBook::AddressBook(std::string path)
-	{
-		Contacts = std::vector<Contact>();
-		Path = path;
-	}
-
-	AddressBook::AddressBook(std::string name, std::string path)
+	AddressBook::AddressBook(std::string name)
 	{
 		Contacts = std::vector<Contact>();
 		Name = name;
-		Path = path;
 	}
 
 	void AddressBook::Add(const Contact& c)
@@ -61,7 +53,8 @@ namespace address_book
 
 	bool AddressBook::Save()
 	{
-		std::ofstream Out = ofstream(Path);
+		std::string path = Name + ".book";
+		std::ofstream Out = ofstream(path);
 		if (!Out) { return false; }
 		for (Contact c : Contacts)
 		{
@@ -73,7 +66,8 @@ namespace address_book
 
 	bool AddressBook::Read()
 	{
-		std::ifstream In = ifstream(Path);
+		std::string path = Name + ".book";
+		std::ifstream In = ifstream(path);
 		if (!In) { return false; }
 		Contacts.clear();		
 		std::string InputLine;
@@ -160,9 +154,5 @@ namespace address_book
 
 	std::string AddressBook::GetName() { return Name; }
 
-	std::string AddressBook::GetPath() { return Path; }
-
 	void AddressBook::ChangeName(std::string name) { Name = name; }
-
-	void AddressBook::ChangePath(std::string path) { Path = path; }
 }

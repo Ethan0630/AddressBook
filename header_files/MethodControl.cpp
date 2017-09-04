@@ -27,7 +27,6 @@ namespace methods
 		case BOOK_MNGR: return BookManager(request);
 		case EDIT_BOOK: return EditBook(request);
 		case CREATE_BOOK: return CreateBook(request);
-		case CHANGE_BOOK: return ChangeBook(request);
 		}
 	}
 
@@ -375,21 +374,108 @@ namespace methods
 
 	Route BookManager(Request& request)
 	{
-
+		str_manip::ClearScreen();
+		vector<string> Page = vector<string>();
+		vector<AddressBook> Books = request.Case.List();
+		for (AddressBook B : Books)
+		{
+			std::string option = B.GetName();
+			if (B.GetName() == request.Case.GetCurrent().GetName()) option += " *";
+			Page.push_back(option);
+		}
+		if (Books.size() < MAX_BOOKS) Page.push_back("Create New Book");
+		Menu BookMenu = Menu(Page, "Manage Books: ", request);
+		if (!BookMenu.RunMenu()) return request.CurrRoute;
+		if (BookMenu.Curr_Selection() == BookMenu.NumOfSelections()) return CREATE_BOOK;
+		else
+		{
+			request.edit_case = BookMenu.Curr_Selection() - 1;
+			return EDIT_BOOK;
+		}
+		return MAIN;
 	}
 
 	Route EditBook(Request& request)
 	{
+		str_manip::ClearScreen();
+		std::string Bname = request.Case.List()[request.edit_case].GetName();
+		Menu EditMenu = Menu({"Edit Name", "Delete"}, "Edit Book: ", request);
+		if (!EditMenu.RunMenu()) return request.CurrRoute;
+		if (EditMenu.Curr_Selection() == 1)
+		{
+			while (1)
+			{
+				cout << "Enter Name of Address Book: ";
+				getline(cin, request.Input);
 
+				// Check for Command
+				if (isCommand(request.Input))
+				{
+					Route CmdRoute = RunCommand(request);
+					if (CmdRoute == NONE) continue;
+					return CmdRoute;
+				}
+
+				// Check for Errors
+				string err = "";
+				if (request.Input.empty()) err = "Name cannot be empty!\n";
+				else if (request.Input.find_first_of("\\/?\":<>*|") != string::npos)
+					err = "Name can't contain characters that are not permitted in file names (\\ / ? \" : < > * |)";
+				else if (isSpec({ request.Input })) err = request.Input + " is a command line special entry\n";
+				else if (request.Case.DupName(request.Input, Bname)) err = "Name " + request.Input + " already exists\n";
+				if (!err.empty()) { cout << err; continue; }
+				break;
+			}
+		}
+		else
+		{
+			BoolMenu SureMenu = BoolMenu("Are you sure you want to delete" + Bname + "?", request);
+			if (!SureMenu.RunMenu()) return request.CurrRoute;
+
+		}
+		return MAIN;
 	}
 
 	Route CreateBook(Request& request)
 	{
+		str_manip::ClearScreen();
+		while (1)
+		{
+			cout << "Enter Name of Address Book: ";
+			getline(cin, request.Input);
 
-	}
+			// Check for Command
+			if (isCommand(request.Input))
+			{
+				Route CmdRoute = RunCommand(request);
+				if (CmdRoute == NONE) continue;
+				return CmdRoute;
+			}
 
-	Route ChangeBook(Request& request)
-	{
-
+			// Check for Errors
+			string err = "";
+			if (request.Input.empty()) err = "Name cannot be empty!\n";
+			else if (request.Input.find_first_of("\\/?\":<>*|") != string::npos)
+				err = "Name can't contain characters that are not permitted in file names (\\ / ? \" : < > * |)";
+			else if (isSpec({ request.Input })) err = request.Input + " is a command line special entry\n";
+			else if (request.Case.DupName(request.Input)) err = "Name " + request.Input + " already exists\n";
+			if (!err.empty()) { cout << err; continue; }
+			break;
+		}
+		AddressBook NewBook = AddressBook(request.Input);
+		BoolMenu SwitchMenu = BoolMenu("Would you like to switch to this book?", request);
+		if (!SwitchMenu.RunMenu()) return request.CurrRoute;
+		if (SwitchMenu.GetBool()) 
+		{
+			if (!request.Book.Save())
+			{
+				"Error while writing file output\nPress any key to exit: ";
+				return EXIT;
+			}
+			request.Case.ChangeCurrent(NewBook.GetName());
+			request.Book = request.Case.GetCurrent();
+			request.CurrentContact = Contact();
+		}
+		return BOOK_MNGR;
 	}
 }

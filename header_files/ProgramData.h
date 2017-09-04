@@ -9,15 +9,19 @@
 #include "ErrorHandling.h"
 #include "Contact.h"
 #include "AddressBook.h"
+#include "BookCase.h"
 #include "StringFunctions.h"
 
 using namespace error_handling;
 using namespace contact;
 using namespace str_manip;
 using namespace address_book;
+using namespace book_case;
 
 enum Route { NONE, MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS, REMOVE, EDIT, EDIT_CHARA, CLEAR, CURRENT, 
-	VIP, SETTINGS, BOOK_MNGR, EDIT_BOOK, CREATE_BOOK, CHANGE_BOOK };
+	VIP, SETTINGS, BOOK_MNGR, EDIT_BOOK, CREATE_BOOK };
+
+const int MAX_BOOKS = 10;
 
 const string CmdError = "Command Format Error!\nPress any key to continue ";
 const string CmdContactNotFound = "Contact Not Found!\nPress any key to continue ";
@@ -64,6 +68,8 @@ const std::vector<string> SpecialEntries = std::vector<string>({
 
 class Request {
 public:
+	BookCase Case;
+	int edit_case;
 	AddressBook Book;
 	Contact CurrentContact;
 	Route PrevRoute;

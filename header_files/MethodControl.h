@@ -10,6 +10,7 @@
 #include "Menus.h"
 #include "Contact.h"
 #include "AddressBook.h"
+#include "BookCase.h"
 #include "StringFunctions.h"
 #include "CommandControl.h"
 
@@ -37,5 +38,4 @@ namespace methods
 	Route BookManager(Request& request);
 	Route EditBook(Request& request);
 	Route CreateBook(Request& request);
-	Route ChangeBook(Request& request);
 }

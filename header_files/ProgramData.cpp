@@ -4,6 +4,7 @@ using namespace std;
 
 Request::Request()
 {
+	Case = BookCase();
 	Book = AddressBook();
 	CurrentContact = Contact();
 	PrevRoute = MAIN;
@@ -13,10 +14,12 @@ Request::Request()
 	VIPRole = std::vector<Contact>();
 	CurrentAttr = "";
 	list_idx = 0;
+	edit_case = 0;
 }
 
 Request::Request(AddressBook& book)
 {
+	Case = BookCase();
 	Book = book;
 	int curr = Book.First();
 	if (curr) CurrentContact = Book.Find(curr);
@@ -28,6 +31,7 @@ Request::Request(AddressBook& book)
 	VIPRole = std::vector<Contact>();
 	CurrentAttr = "";
 	list_idx = 0;
+	edit_case = 0;
 }
 
 Contact Request::CurrContact(int id)

@@ -19,6 +19,14 @@ namespace book_case
 	{
 		Books = std::vector<AddressBook>();
 		CurrentBook = 0;
+		Path = "";
+	}
+
+	BookCase::BookCase(std::string path)
+	{
+		Books = std::vector<AddressBook>();
+		CurrentBook = 0;
+		Path = path;
 	}
 
 	void BookCase::Add(const AddressBook& b)
@@ -34,7 +42,6 @@ namespace book_case
 		{
 			return B.GetName() == dname;
 		});
-		val->ChangePath(b.GetPath());
 		val->ChangeName(b.GetName());
 		Sort();
 	}
@@ -63,7 +70,7 @@ namespace book_case
 		for (int i = 0; i < Books.size(); i++)
 		{
 			string isCurrent = (i == CurrentBook) ? "-t" : "-f";
-			Out << Books[i].GetName() << '|' << Books[i].GetPath() << '|' << isCurrent << "\n";
+			Out << Books[i].GetName() << '|' << isCurrent << "\n";
 		}
 		Out.close();
 		return true;
@@ -79,8 +86,8 @@ namespace book_case
 		while (std::getline(In, InputLine))
 		{
 			std::vector<std::string> InputVec = str_manip::Str_SplitByChar(InputLine, '|');
-			if (InputVec[2] == "-t") CurrentBook = idx;
-			Books.push_back(AddressBook(InputVec[0], InputVec[1]));
+			if (InputVec[1] == "-t") CurrentBook = idx;
+			Books.push_back(AddressBook(InputVec[0]));
 			idx++;
 		}
 		Sort();
