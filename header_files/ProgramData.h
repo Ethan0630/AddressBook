@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <windows.h>
 #include <unordered_map>
 #include "ErrorHandling.h"
 #include "Contact.h"
@@ -19,7 +20,7 @@ using namespace address_book;
 using namespace book_case;
 
 enum Route { NONE, MAIN, EXIT, LIST, SEARCH, CREATE, DISPLAY, ADD_CHARAS, REMOVE, EDIT, EDIT_CHARA, CLEAR, CURRENT, 
-	VIP, SETTINGS, BOOK_MNGR, EDIT_BOOK, CREATE_BOOK };
+	VIP, SETTINGS, BOOK_MNGR, EDIT_BOOK, CREATE_BOOK, SEARCH_RESULTS };
 
 const int MAX_BOOKS = 10;
 
@@ -99,3 +100,4 @@ string CheckNameInput(vector<string> Names);
 vector<vector<Contact>> Paginate(vector<Contact> query);
 vector<string> ListNav(int idx, int pages_num);
 string ListHeading(Request request, int idx, int pages_num);
+void Highlight();

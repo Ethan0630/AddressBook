@@ -27,6 +27,7 @@ namespace methods
 		case BOOK_MNGR: return BookManager(request);
 		case EDIT_BOOK: return EditBook(request);
 		case CREATE_BOOK: return CreateBook(request);
+		case SEARCH_RESULTS: return SearchResults(request);
 		}
 	}
 
@@ -357,7 +358,27 @@ namespace methods
 		}
 		request.AltPrevRoute = SEARCH;
 		request.PrevRoute = SEARCH;
-		return LIST;
+		return SEARCH_RESULTS;
+	}
+
+	Route SearchResults(Request& request)
+	{
+		std::string Results = "";
+		for (Contact c : request.SearchResults) Results += c.DisplayFormat() + "\n";
+		
+		int start = 0;
+		std::string::size_type n = -1;
+		while ((n = Results.find(request.Input, n + 1)) != std::string::npos)
+		{
+			cout << Results.substr(start, n - start);
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x02);
+			cout << Results.substr(n, request.Input.size());
+			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x07);
+			start = n + request.Input.size();
+		}
+		cout << Results.substr(start, Results.size() - start + 1);
+		getchar();
+		return MAIN;
 	}
 
 	Route VIPList(Request& request)

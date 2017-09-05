@@ -34,6 +34,7 @@ namespace methods
 	Route Edit(Request& request);
 	Route EditChara(Request& request);
 	Route Search(Request& request);
+	Route SearchResults(Request& request);
 	Route VIPList(Request& request);
 	Route Settings(Request& request);
 	Route BookManager(Request& request);

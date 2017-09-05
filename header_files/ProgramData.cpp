@@ -128,3 +128,17 @@ string ListHeading(Request request, int idx, int pages_num)
 	default: return "Contact List : Page " + to_string(idx + 1) + " of " + to_string(pages_num);
 	}
 }
+
+/*void DisplayHighlighted(Request& request)
+{
+	const std::string s = "*A";
+	const std::string t = "*A\n";
+
+	std::string::size_type n = 0;
+	while ((n = chartDataString.find(s, n)) != std::string::npos)
+	{
+		chartDataString.replace(n, s.size(), t);
+		n += t.size();
+	}
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0x02);
+}*/
